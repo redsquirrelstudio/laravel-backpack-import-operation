@@ -1,9 +1,9 @@
 {
     "name": "redsquirrelstudio/laravel-backpack-import-operation",
-    "description": "An operation to create configurable imports for your CRUDs with the Backpack api you know and love",
+    "description": "An operation to make configurable imports for your CRUDs using the Backpack api you know and love",
     "autoload": {
         "psr-4": {
-            "Redsquirrelstudio\\LaravelBackpackImportOperation\\": "src/"
+            "RedSquirrelStudio\\LaravelBackpackImportOperation\\": "src/"
         }
     },
     "require": {

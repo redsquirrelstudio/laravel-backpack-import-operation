@@ -12,7 +12,7 @@ class ImportOperationProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        $this->loadTranslationsFrom(__DIR__.'/../resources/lang', 'import-operation');
+        $this->loadTranslationsFrom(__DIR__.'/../../resources/lang', 'import-operation');
 
         // load views
         // - from 'resources/views/vendor/backpack/import-operation' if they're there
@@ -20,7 +20,7 @@ class ImportOperationProvider extends ServiceProvider
         if (is_dir(resource_path('views/vendor/backpack/import-operation'))) {
             $this->loadViewsFrom(resource_path('views/vendor/backpack/import-operation'), 'import-operation');
         }
-        $this->loadViewsFrom(__DIR__.'/../resources/views', 'import-operation');
+        $this->loadViewsFrom(__DIR__.'/../../resources/views', 'import-operation');
 
         // Publishing is only necessary when using the CLI.
         if ($this->app->runningInConsole()) {
@@ -36,12 +36,12 @@ class ImportOperationProvider extends ServiceProvider
     {
         // Publishing Views
         $this->publishes([
-            __DIR__.'/../resources/views' => base_path('resources/views/vendor/backpack'),
+            __DIR__.'/../../resources/views' => base_path('resources/views/vendor/backpack'),
         ], 'import-operation.views');
 
         // Publishing Translations
         $this->publishes([
-            __DIR__.'/../resources/lang' => resource_path('lang/vendor/backpack'),
+            __DIR__.'/../../resources/lang' => resource_path('lang/vendor/backpack'),
         ], 'import-operation.lang');
     }
 
