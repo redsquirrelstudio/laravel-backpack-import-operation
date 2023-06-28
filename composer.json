@@ -1,0 +1,20 @@
+{
+    "name": "redsquirrelstudio/laravel-backpack-import-operation",
+    "description": "An operation to create configurable imports for your CRUDs with the Backpack api you know and love",
+    "autoload": {
+        "psr-4": {
+            "Redsquirrelstudio\\LaravelBackpackImportOperation\\": "src/"
+        }
+    },
+    "require": {
+        "backpack/crud": "^5.6",
+        "maatwebsite/excel": "^3.1"
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "RedSquirrelStudio\\LaravelBackpackImportOperation\\Providers\\ImportOperationServiceProvider"
+            ]
+        }
+    }
+}
