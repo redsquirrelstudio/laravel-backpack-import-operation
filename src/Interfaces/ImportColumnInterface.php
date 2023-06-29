@@ -16,4 +16,10 @@ interface ImportColumnInterface
      * @return mixed
      */
     public function output(): mixed;
+
+    /**
+     * @param string|null $key
+     * @return mixed
+     */
+    public function getConfig(?string $key = null): mixed;
 }

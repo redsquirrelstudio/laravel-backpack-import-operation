@@ -17,5 +17,6 @@ return [
     'columns' => [
         'text' => Columns\TextColumn::class,
         'number' => Columns\NumberColumn::class,
+        'boolean' => Columns\BooleanColumn::class,
     ]
 ];

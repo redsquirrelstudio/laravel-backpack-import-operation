@@ -27,4 +27,19 @@ class ImportColumn implements ImportColumnInterface
     {
         return $this->data;
     }
+
+    /**
+     * @param string|null $key
+     * @return mixed
+     */
+    public function getConfig(?string $key = null): mixed
+    {
+        if (is_null($key)){
+            return $this->config;
+        }
+        if (isset($this->config[$key])){
+            return $this->config[$key];
+        }
+        return null;
+    }
 }
