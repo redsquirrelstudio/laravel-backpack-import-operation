@@ -2,12 +2,14 @@
 
 namespace RedSquirrelStudio\LaravelBackpackImportOperation;
 
-use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
-use RedSquirrelStudio\LaravelBackpackImportOperation\Models\ImportLog;
-use RedSquirrelStudio\LaravelBackpackImportOperation\Requests\ImportFileRequest;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Route;
+use Maatwebsite\Excel\Facades\Excel;
+use Maatwebsite\Excel\HeadingRowImport;
+use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
+use RedSquirrelStudio\LaravelBackpackImportOperation\Models\ImportLog;
+use RedSquirrelStudio\LaravelBackpackImportOperation\Requests\ImportFileRequest;
 
 trait ImportOperation
 {
@@ -72,8 +74,8 @@ trait ImportOperation
     }
 
     /**
-     * Return initial view for import file upload
      * @return View
+     * Return initial view for import file upload
      */
     public function selectFile(): View
     {
@@ -89,6 +91,7 @@ trait ImportOperation
 
     /**
      * @return RedirectResponse
+     * Handle saving the import file and redirect to field mapper
      */
     public function handleFile(): RedirectResponse
     {
@@ -119,5 +122,34 @@ trait ImportOperation
         ]);
 
         return redirect($this->crud->route.'/import/'.$log->id.'/map');
+    }
+
+    /**
+     * @param HeadingRowImport $headingImport
+     * @param int $id
+     * @return View
+     * Return view for mapping fields to import columns
+     */
+    public function mapFields(HeadingRowImport $headingImport, int $id): View
+    {
+        //Find the import log
+        $log_model = config('backpack.operations.import.import_log_model') ?? ImportLog::class;
+        $log = $log_model::find($id);
+        if (!$log){
+            abort(404);
+        }
+
+        //Get base level of array if import returns multiple nested arrays for headers
+        $column_headers = Excel::toArray($headingImport, $log->file_path, $log->disk);
+        do{
+            $column_headers = $column_headers[0];
+        } while(isset($column_headers[0]) && is_array($column_headers[0]));
+
+        return view('import-operation::map-fields', [
+            'crud' => $this->crud,
+            'title' => CRUD::getTitle() ?? __('import-operation::import.import') . ' ' . $this->crud->entity_name,
+            'column_headers' => $column_headers,
+            'import_id' => $log->id,
+        ]);
     }
 }

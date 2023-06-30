@@ -11,9 +11,9 @@ class ImportColumn implements ImportColumnInterface
     /**
      * Instantiate with data from the spreadsheet column
      * @param string $data
-     * @param array $config
+     * @param array $config = []
      */
-    public function __construct(string $data, array $config)
+    public function __construct(string $data, array $config = [])
     {
         $this->data = $data;
         $this->config = $config;
@@ -41,5 +41,15 @@ class ImportColumn implements ImportColumnInterface
             return $this->config[$key];
         }
         return null;
+    }
+
+    /**
+     * @return string
+     */
+    public function getName(): string
+    {
+        $class = get_class($this);
+        $class_parts = explode("\\", $class);
+        return str_replace('Column', '', array_pop($class_parts));
     }
 }

@@ -17,7 +17,7 @@ return [
     'path' => env('BACKPACK_IMPORT_FILE_PATH', 'imports'),
 
     // Aliases for import column types to be used in operation setup
-    'columns' => [
+    'column_aliases' => [
         'array' => Columns\ArrayColumn::class,
         'boolean' => Columns\BooleanColumn::class,
         'date' => Columns\DateColumn::class,
