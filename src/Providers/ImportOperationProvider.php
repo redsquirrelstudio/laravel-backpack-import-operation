@@ -14,13 +14,21 @@ class ImportOperationProvider extends ServiceProvider
     {
         $this->loadTranslationsFrom(__DIR__.'/../../resources/lang', 'import-operation');
 
-        // load views
-        // - from 'resources/views/vendor/backpack/import-operation' if they're there
-        // - otherwise fall back to package views
+        //Load Views
         if (is_dir(resource_path('views/vendor/backpack/import-operation'))) {
             $this->loadViewsFrom(resource_path('views/vendor/backpack/import-operation'), 'import-operation');
         }
         $this->loadViewsFrom(__DIR__.'/../../resources/views', 'import-operation');
+
+        //Publish migrations
+        $this->publishes([
+            __DIR__ . '/../../database/migrations/' => database_path('migrations'),
+        ], 'laravel-backpack-import-operation-migrations');
+
+        //Publish config
+        $this->publishes([
+            __DIR__ . '/../../config/' => config_path('backpack/operations'),
+        ], 'laravel-backpack-import-operation-config');
 
         // Publishing is only necessary when using the CLI.
         if ($this->app->runningInConsole()) {
