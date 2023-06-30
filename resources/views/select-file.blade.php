@@ -58,6 +58,10 @@
                 {{-- This makes sure that all field assets are loaded. --}}
                 <div class="d-none" id="parentLoadedAssets">{{ json_encode(Assets::loaded()) }}</div>
 
+                <button class="btn btn-success">
+                    <i class="las la-file-upload"></i>
+                    @lang('import-operation::import.confirm_selection')
+                </button>
             </form>
         </div>
     </div>
