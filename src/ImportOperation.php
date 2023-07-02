@@ -15,6 +15,7 @@ use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
 use RedSquirrelStudio\LaravelBackpackImportOperation\Columns\NumberColumn;
 use RedSquirrelStudio\LaravelBackpackImportOperation\Columns\TextColumn;
 use RedSquirrelStudio\LaravelBackpackImportOperation\Imports\CrudImport;
+use RedSquirrelStudio\LaravelBackpackImportOperation\Imports\QueuedCrudImport;
 use RedSquirrelStudio\LaravelBackpackImportOperation\Models\ImportLog;
 use RedSquirrelStudio\LaravelBackpackImportOperation\Requests\ImportFileRequest;
 use Exception;
@@ -257,8 +258,8 @@ trait ImportOperation
         $log->started_at = Carbon::now();
         $log->save();
 
-        if ($this->crud->getOperationSetting('queue_import', 'import') ?? false) {
-
+        if ($this->crud->getOperationSetting('queueImport', 'import') ?? false) {
+            Excel::queueImport(new QueuedCrudImport($log->id), $log->file_path, $log->disk)->onQueue(config('backpack.operations.import.queue'));
             \Alert::add('success', __('import-operation::import.your_import_has_been_queued'))->flash();
         } else {
             Excel::import(new CrudImport($log->id), $log->file_path, $log->disk);

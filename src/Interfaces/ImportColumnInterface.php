@@ -6,10 +6,10 @@ interface ImportColumnInterface
 {
     /**
      * Instantiate with data from the spreadsheet column
-     * @param string $data
-     * @param array $config
+     * @param ?string $data = null
+     * @param ?array $config = []
      */
-    public function __construct(string $data, array $config);
+    public function __construct(?string $data = null, ?array $config = []);
 
     /**
      * Return the data after processing

@@ -11,9 +11,9 @@ class ImportColumn implements ImportColumnInterface
     /**
      * Instantiate with data from the spreadsheet column
      * @param ?string $data = null
-     * @param array $config = []
+     * @param ?array $config = []
      */
-    public function __construct(?string $data = null, array $config = [])
+    public function __construct(?string $data = null, ?array $config = [])
     {
         $this->data = $data;
         $this->config = $config;

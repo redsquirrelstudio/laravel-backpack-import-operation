@@ -3,14 +3,17 @@
 namespace RedSquirrelStudio\LaravelBackpackImportOperation\Imports;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Carbon;
 use Maatwebsite\Excel\Concerns\OnEachRow;
+use Maatwebsite\Excel\Concerns\WithEvents;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
+use Maatwebsite\Excel\Events\AfterImport;
 use Maatwebsite\Excel\Row;
 use RedSquirrelStudio\LaravelBackpackImportOperation\Columns\TextColumn;
 use RedSquirrelStudio\LaravelBackpackImportOperation\Models\ImportLog;
 use Exception;
 
-class CrudImport implements OnEachRow, WithHeadingRow
+class CrudImport implements OnEachRow, WithHeadingRow, WithEvents
 {
     protected $import_log;
 
@@ -50,7 +53,7 @@ class CrudImport implements OnEachRow, WithHeadingRow
             $handler_class = $this->getColumnHandlerClass($matched_config);
             if ($matched_config && $handler_class) {
                 //Instantiate handler class, process data from column
-                $handler = new $handler_class($value);
+                $handler = new $handler_class($value, $matched_config);
                 $data = $handler->output();
 
                 //Assign the data to the model field specified in config
@@ -140,5 +143,29 @@ class CrudImport implements OnEachRow, WithHeadingRow
             }
         }
         return TextColumn::class;
+    }
+
+
+    /**
+     * @return Model
+     */
+    protected function getImportLog(): Model
+    {
+        return $this->import_log;
+    }
+
+    /**
+     * @return array
+     */
+    public function registerEvents(): array
+    {
+        return [
+            AfterImport::class => function (AfterImport $event) {
+                $importer = $event->getConcernable();
+                $log = $importer->getImportLog();
+                $log->completed_at = Carbon::now();
+                $log->save();
+            },
+        ];
     }
 }

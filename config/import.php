@@ -16,6 +16,12 @@ return [
     //Path to store uploaded import files
     'path' => env('BACKPACK_IMPORT_FILE_PATH', 'imports'),
 
+    //Queue to dispatch import jobs to
+    'queue' => env('QUEUE_CONNECTION', 'sync'),
+
+    //Chunk size for reading import files
+    'chunk_size' => env('BACKPACK_IMPORT_CHUNK_SIZE', 100),
+
     // Aliases for import column types to be used in operation setup
     'column_aliases' => [
         'array' => Columns\ArrayColumn::class,
