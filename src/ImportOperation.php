@@ -2,6 +2,7 @@
 
 namespace RedSquirrelStudio\LaravelBackpackImportOperation;
 
+use Carbon\Carbon;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\RedirectResponse;
@@ -252,6 +253,9 @@ trait ImportOperation
         if (!$this->validateImport($log, true)) {
             return redirect($this->crud->route . '/import/' . $id . '/map');
         }
+
+        $log->started_at = Carbon::now();
+        $log->save();
 
         if ($this->crud->getOperationSetting('queue_import', 'import') ?? false) {
 

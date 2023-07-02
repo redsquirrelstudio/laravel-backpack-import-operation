@@ -14,14 +14,17 @@ class DateColumn extends ImportColumn
     public function output(): ?Carbon
     {
         $date = null;
-        try {
-            if (is_numeric($this->data)) {
-                $date = Carbon::parse(Date::excelToDateTimeObject($this->data));
-            } else {
-                $date = Carbon::parse(str_replace(['/', '_', ' '], ['-', '-', '-'], $this->data));
+        if ($this->data){
+            try {
+                if (is_numeric($this->data)) {
+                    $date = Carbon::parse(Date::excelToDateTimeObject($this->data));
+                } else {
+                    $date = Carbon::parse(str_replace(['/', '_', ' '], ['-', '-', '-'], $this->data));
+                }
+            } catch (\Exception $e) {
             }
-        } catch (\Exception $e) {
         }
+
 
         return $date;
     }

@@ -11,22 +11,22 @@ class BooleanColumn extends ImportColumn
     public function output(): bool
     {
         $options = $this->getConfig('options');
-        collect($options)->map(function($option, $key){
-            if (!is_bool($key)){
-                throw new \Exception(
-                    'The key: '.$key.' is invalid for a boolean import column option. Please use true/false 1/0 etc.'
-                );
-            }
-        });
 
-        if ($options){
-            foreach($options as $value => $option) {
+        if ($options) {
+            collect($options)->map(function ($option, $key) {
+                if (!is_bool($key)) {
+                    throw new \Exception(
+                        'The key: ' . $key . ' is invalid for a boolean import column option. Please use true/false 1/0 etc.'
+                    );
+                }
+            });
+            foreach ($options as $value => $option) {
                 if ($option === $this->data) {
                     return $value;
                 }
             }
         }
 
-        return $this->data === '1';
+        return in_array(strtolower($this->data ?? ''), ['true', '1', 'y']);
     }
 }

@@ -5,15 +5,15 @@ namespace RedSquirrelStudio\LaravelBackpackImportOperation\Columns;
 use RedSquirrelStudio\LaravelBackpackImportOperation\Interfaces\ImportColumnInterface;
 class ImportColumn implements ImportColumnInterface
 {
-    protected string $data;
+    protected ?string $data;
     protected array $config;
 
     /**
      * Instantiate with data from the spreadsheet column
-     * @param string $data
+     * @param ?string $data = null
      * @param array $config = []
      */
-    public function __construct(string $data, array $config = [])
+    public function __construct(?string $data = null, array $config = [])
     {
         $this->data = $data;
         $this->config = $config;

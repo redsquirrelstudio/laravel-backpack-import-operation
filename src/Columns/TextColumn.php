@@ -5,9 +5,9 @@ namespace RedSquirrelStudio\LaravelBackpackImportOperation\Columns;
 class TextColumn extends ImportColumn
 {
     /**
-     * @return string
+     * @return ?string
      */
-    public function output(): string
+    public function output(): ?string
     {
         return $this->data;
     }
