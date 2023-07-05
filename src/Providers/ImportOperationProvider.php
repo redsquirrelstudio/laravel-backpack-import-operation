@@ -30,6 +30,11 @@ class ImportOperationProvider extends ServiceProvider
             __DIR__ . '/../../config/' => config_path('backpack/operations'),
         ], 'laravel-backpack-import-operation-config');
 
+        //Publish views
+        $this->publishes([
+            __DIR__ . '/../../resources/views/' => resource_path('views/vendor/backpack/import-operation'),
+        ], 'laravel-backpack-import-operation-views');
+
         // Publishing is only necessary when using the CLI.
         if ($this->app->runningInConsole()) {
             $this->bootForConsole();

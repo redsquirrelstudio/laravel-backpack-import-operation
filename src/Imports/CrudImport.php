@@ -46,6 +46,7 @@ class CrudImport implements OnEachRow, WithHeadingRow, WithEvents
         $row = $this->filterRow($row);
 
         //Loop through row headings
+        $update_data = [];
         foreach ($row as $heading => $value) {
             $data = null;
             //Get the config that matches the current column heading
@@ -58,7 +59,7 @@ class CrudImport implements OnEachRow, WithHeadingRow, WithEvents
 
                 //Assign the data to the model field specified in config
                 $model_field = $matched_config['name'];
-                $entry->{$model_field} = $data;
+                $update_data[$model_field] = $data;
             }
         }
         //Save the entry
