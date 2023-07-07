@@ -22,6 +22,9 @@ use Exception;
 
 trait ImportOperation
 {
+    protected ?string $example_file_url = null;
+    protected ?string $custom_import_handler = null;
+
     /**
      * Define which routes are needed for this operation.
      *
@@ -96,8 +99,37 @@ trait ImportOperation
             'name' => 'file',
             'label' => __('import-operation::import.select_a_file'),
             'type' => 'upload',
-            'hint' => __('import-operation::import.accepted_types'),
+            'hint' => __('import-operation::import.accepted_types').'. '.
+                ($this->example_file_url ? '<a target="_blank" download title="'.__('import-operation::import.download_example').'" href="'.$this->example_file_url.'">'.__('import-operation::import.download_example').'</a>' : ''),
         ]);
+    }
+
+    /**
+     * Queue imports to be handled in the background
+     * @return void
+     */
+    public function queueImport(): void
+    {
+        CRUD::setOperationSetting('queueImport', true);
+    }
+
+    /**
+     * Set a custom import class, this will skip the mapping phase on the front end
+     * @param string $import_class
+     * @return void
+     */
+    public function setImportHandler(string $import_class): void
+    {
+        $this->custom_import_handler = $import_class;
+    }
+
+    /**
+     * @param string $url
+     * @return void
+     */
+    public function setExampleFileUrl(string $url): void
+    {
+        $this->example_file_url = $url;
     }
 
     /**
@@ -149,6 +181,11 @@ trait ImportOperation
             'model' => get_class($this->crud->model),
             'model_primary_key' => $this->getImportPrimaryKey(),
         ]);
+
+        //If a custom import is set, skip directly to handle the import
+        if (!is_null($this->custom_import_handler)){
+            return $this->handleImport($log->id);
+        }
 
         return redirect($this->crud->route . '/import/' . $log->id . '/map');
     }
@@ -251,20 +288,31 @@ trait ImportOperation
 
         $log = $this->getCurrentImportLog($id);
 
-        if (!$this->validateImport($log, true)) {
+        if (!$this->validateImport($log, is_null($this->custom_import_handler))) {
             return redirect($this->crud->route . '/import/' . $id . '/map');
         }
+
+        $formRequest = $this->crud->getFormRequest();
 
         $log->started_at = Carbon::now();
         $log->save();
 
-        if ($this->crud->getOperationSetting('queueImport', 'import') ?? false) {
-            Excel::queueImport(new QueuedCrudImport($log->id), $log->file_path, $log->disk)->onQueue(config('backpack.operations.import.queue'));
+        $import_should_queue = $this->crud->getOperationSetting('queueImport', 'import') ?? false;
+        $import_class = $import_should_queue ? CrudImport::class : QueuedCrudImport::class;
+
+        //Set custom import class if it has been specified
+        if (!is_null($this->custom_import_handler)){
+            $import_class = $this->custom_import_handler;
+        }
+
+        if ($import_should_queue) {
+            Excel::queueImport(new $import_class($log->id, $formRequest), $log->file_path, $log->disk)->onQueue(config('backpack.operations.import.queue'));
             \Alert::add('success', __('import-operation::import.your_import_has_been_queued'))->flash();
         } else {
-            Excel::import(new CrudImport($log->id), $log->file_path, $log->disk);
+            Excel::import(new $import_class($log->id, $formRequest), $log->file_path, $log->disk);
             \Alert::add('success', __('import-operation::import.your_import_has_been_processed'))->flash();
         }
+
         return redirect($this->crud->route);
     }
 

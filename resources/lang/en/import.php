@@ -22,5 +22,6 @@ return [
     'remap_import' => 'Remap Import',
     'your_import_has_been_queued' => 'Your import has been queued and will be processed in the background.',
     'your_import_has_been_processed' => 'Your import has been processed successfully.',
-    'cant_find_log' => 'The specified import could not be found.'
+    'cant_find_log' => 'The specified import could not be found.',
+    'download_example' => 'Click here to download an example file.',
 ];

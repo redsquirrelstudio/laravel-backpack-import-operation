@@ -5,15 +5,15 @@
 
 Adds a configurable interface that allows your admin users to:
 
-- Upload a spreadsheet file
-- Map the file's columns to your CRUD model's fields
-- Import their data
+- Upload a spreadsheet file.
+- Map the file's columns to your CRUD model's fields.
+- Import their data.
 
 and allows you as the developer to:
 
-- Customise each CRUD's import behaviour using the Backpack API you know and love
-- Choose between queued or instant imports
-- Completely customise the operation's behaviour
+- Customise each CRUD's import behaviour using the Backpack API you know and love.
+- Choose between queued or instant imports.
+- Completely customise the operation's behaviour.
 
 ![Screenshot of the operation's mapping screen](https://raw.githubusercontent.com/redsquirrelstudio/laravel-backpack-import-operation/dev/assets/screenshot.jpg?raw=true)
 
@@ -34,15 +34,18 @@ the same syntax as you would to define your list views.
     3. [Boolean](#boolean)
     4. [Date](#date)
     5. [Array](#array)
-4. [Adding Your Own Columns](#adding-your-own-columns)
-5. [Queued Imports](#queued-imports)
-6. [Configuration](#configuration)
+4. [Validation](#validation)
+5. [Adding an Example File](#adding-an-example-file)
+6. [Adding Your Own Columns](#adding-your-own-columns)
+7. [Custom Import Classes](#custom-import-classes)
+8. [Queued Imports](#queued-imports)
+9. [Configuration](#configuration)
     1. [File Uploads](#file-uploads)
     2. [Queues](#queues)
     3. [Changing the Import log Model](#import-log)
     4. [Customising Views](#views)
-7. [Credits](#credits)
-8. [License](#license)
+10. [Credits](#credits)
+11. [License](#license)
 
 ## Installation
 
@@ -59,8 +62,8 @@ This will also install [```maatwebsite/excel```][link-laravel-excel] if it's not
 **Step 2. (Optional)**
 
 The service provider at: ```RedSquirrelStudio\LaravelBackpackImportOperation\Providers\ImportOperationProvider```
-will be auto-discovered and registered by default. However, if you're like me, you can add it to
-your ```config/app.php```
+will be auto-discovered and registered by default. Although, if you're like me, you can add it to
+your ```config/app.php```.
 
 ```php
     'providers' => ServiceProvider::defaultProviders()->merge([
@@ -151,13 +154,13 @@ with, in most cases, a name, label, and type. Each column corresponds to a model
 The type of column is important as it specifies how the data from the spreadsheet
 will be processed before it is saved against the model.
 
-### <span style="color: red">=======IMPORTANT=======</span>
+### <span style="color: red">=========IMPORTANT==========</span>
 
 The columns you specify here correspond to the model fields **NOT**
 the spreadsheet columns. The user has the option to assign any spreadsheet column
 to any import column within the interface.
 
-### <span style="color: red">=======================</span>
+### <span style="color: red">=============================</span>
 
 ## Column Types
 
@@ -296,6 +299,35 @@ within the ```$casts``` array, as shown below:
   ];
 ```
 
+## Validation
+
+Validating your imports works similarly to how you would validate a 
+create or update method, call the following function within the ```setupImportOperation```
+function:
+```php
+    protected function setupImportOperation()
+    {
+        CRUD::setValidation(CustomerRequest::class);
+        //Some column config...
+```
+The form request should validate what is required for your model, **Not** the spreadsheet
+columns, again because the column headers shouldn't matter as the user can map them.
+
+## Adding an Example File
+You can also add a link for your user to download an example spreadsheet with data that you 
+would expect them to upload. To set this use the following function within the ```setupImportOperation```
+function:
+```php
+    protected function setupImportOperation()
+    {
+        $this->setExampleFileUrl('https://example.com/link-to-your-download/file.csv');
+        //Some column config...
+```
+Doing this will provide them with a link like this when uploading their file:
+
+![Screenshot of the operation's example download](https://raw.githubusercontent.com/redsquirrelstudio/laravel-backpack-import-operation/dev/assets/example-download.jpg?raw=true)
+
+
 ## Adding Your Own Columns
 
 The import operation offers the option to create your own
@@ -345,7 +377,7 @@ the ```'column_aliases'``` array:
 
 ***Boom***
 
-Your column is ready for action
+Your column is ready for action.
 
 ```php
 CRUD::addColumn([
@@ -366,6 +398,49 @@ CRUD::addColumn([
 ]);  
 ```
 
+## Custom Import Classes
+
+If you don't want to use the column mapping interface, you also have the option 
+to specify your own import class. To do this, create your import class using:
+```
+php artisan make:import <YourImportName>
+```
+
+You can then follow the [```maatwebsite/excel``` documentation][link-laravel-excel] 
+to build an import with finer control if required.
+
+This package provides an interface ```WithCrudSupport``` for your custom import classes that allows your IDE to
+grab the method stubs providing you with the import log ID and validation class.
+
+```php
+use RedSquirrelStudio\LaravelBackpackImportOperation\Interfaces\WithCrudSupport;
+
+class CustomImport implements OnEachRow, WithCrudSupport
+{
+    public function __construct(int $import_log_id, ?string $validator = null)
+    {
+
+    }
+
+    public function onRow(Row $row)
+    {
+        $row = $row->toArray();
+        //Your import handling
+```
+
+This may make life easier, add it or don't, I'm not your boss!
+
+Once you've created your beautiful import class, set it using
+this function within the ```setupImportOperation``` function:
+
+```php
+    protected function setupImportOperation()
+    {
+        $this->setImportHandler(CustomImport::class);
+        //Some column config...
+```
+
+
 ## Queued Imports
 
 In most situations, it is going to be better for the user
@@ -379,7 +454,7 @@ of code to the ```setupImportOperation()``` function:
     //...
     protected function setupImportOperation()
     {
-        CRUD::setOperationSetting('queueImport', true);
+        $this->queueImport();
     //...
 ```
 
@@ -393,14 +468,14 @@ official docs][link-laravel-queue-docs].
 
 By default, spreadsheets will be stored in your default disk
 at the path /imports. but this can be altered either by changing the following
-env variables
+env variables:
 
 ```dotenv
 FILESYSTEM_DISK="s3"
 BACKPACK_IMPORT_FILE_PATH="/2023/application-name/imports"
 ```
 
-Or by directly changing the options within ```config/backpack/operations/import.php```
+Or by directly changing the options within ```config/backpack/operations/import.php```.
 
 ```php
     //...
@@ -422,7 +497,7 @@ QUEUE_CONNECTION="import-queue"
 BACKPACK_IMPORT_CHUNK_SIZE=300
 ```
 
-or changing the value directly within ```config/backpack/operations/import.php```
+or changing the value directly within ```config/backpack/operations/import.php```.
 
 ```php
     //...
@@ -441,7 +516,7 @@ that is used to log imports, I can't think of a reason why, but I'm
 sure someone will come up with one.
 
 If you do, make sure to update the migration, and specify your own
-model at ```config/backpack/operations/import.php```
+model at ```config/backpack/operations/import.php```.
 
 ```php
 //...
@@ -452,14 +527,17 @@ return [
 
 ### Views
 
-You can update the operation views if required. To do this run
+You can update the operation views if required. To do this run:
+
 ```bash
 php artisan vendor:publish --tag=laravel-backpack-import-operation-views
 ```
+
 to publish the operation blade files to ```resources/views/vendor/backpack/import-operation```
 The files stored in this directory take priority over the package's default views.
 
 ### Credits
+
 - [Lewis Raggett][link-me] :: Package Creator
 - [Cristian Tabacitu][link-backpack] :: Backpack for Laravel Creator
 - [Spartner][link-laravel-excel] :: Laravel Excel Creator
@@ -469,12 +547,21 @@ The files stored in this directory take priority over the package's default view
 MIT. Please see the [license file](license.md) for more information.
 
 [ico-version]: https://img.shields.io/packagist/v/redsquirrelstudio/laravel-backpack-import-operation?style=flat-square
+
 [ico-license]: https://img.shields.io/badge/license-dual-blue?style=flat-square
+
 [link-packagist]: https://packagist.org/packages/redsquirrelstudio/laravel-backpack-import-operation
+
 [ico-downloads]: https://img.shields.io/packagist/dt/redsquirrelstudio/laravel-backpack-import-operation.svg?style=flat-square
+
 [link-downloads]: https://packagist.org/packages/backpack/revise-operation
+
 [link-laravel-excel]: https://laravel-excel.com
+
 [link-carbon]: https://carbon.nesbot.com/docs
+
 [link-laravel-queue-docs]: https://laravel.com/docs/queues
+
 [link-backpack]: https://github.com/backpack
+
 [link-me]: https://github.com/redsquirrelstudio

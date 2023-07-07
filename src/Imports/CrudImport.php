@@ -3,25 +3,30 @@
 namespace RedSquirrelStudio\LaravelBackpackImportOperation\Imports;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Validator;
 use Maatwebsite\Excel\Concerns\OnEachRow;
 use Maatwebsite\Excel\Concerns\WithEvents;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Maatwebsite\Excel\Events\AfterImport;
 use Maatwebsite\Excel\Row;
 use RedSquirrelStudio\LaravelBackpackImportOperation\Columns\TextColumn;
+use RedSquirrelStudio\LaravelBackpackImportOperation\Interfaces\CrudImportInterface;
 use RedSquirrelStudio\LaravelBackpackImportOperation\Models\ImportLog;
 use Exception;
 
-class CrudImport implements OnEachRow, WithHeadingRow, WithEvents
+class CrudImport implements WithCrudSupport, OnEachRow, WithHeadingRow, WithEvents
 {
     protected $import_log;
+    protected ?array $rules;
 
     /**
      * @param int $import_log_id
+     * @param string|null $validator
      * @throws Exception
      */
-    public function __construct(int $import_log_id)
+    public function __construct(int $import_log_id, ?string $validator = null)
     {
         //Find the import log
         $model = config('backpack.operations.import.import_log_model') ?? ImportLog::class;
@@ -30,6 +35,7 @@ class CrudImport implements OnEachRow, WithHeadingRow, WithEvents
             throw new Exception(__('import-operation::import.cant_find_log'));
         }
         $this->import_log = $import_log;
+        $this->rules =  $validator ? (new $validator)->rules() : null;
     }
 
     /**
@@ -44,6 +50,21 @@ class CrudImport implements OnEachRow, WithHeadingRow, WithEvents
         $entry = $this->getEntry($row);
         //Filter the spreadsheet row down to mapped columns, exclude the primary key
         $row = $this->filterRow($row);
+
+        //If validation is set, we need to map the file columns to our model fields
+        if ($this->rules){
+            $mapped_rules = [];
+            foreach($this->rules as $key => $rule){
+                $matching_heading = $this->getMatchedHeading($key);
+                if ($matching_heading){
+                    $mapped_rules[$matching_heading] = $rule;
+                }
+            }
+
+            if (count($mapped_rules) > 0 && Validator::make($row, $mapped_rules)->fails()){
+                return;
+            }
+        }
 
         //Loop through row headings
         $update_data = [];
@@ -108,6 +129,7 @@ class CrudImport implements OnEachRow, WithHeadingRow, WithEvents
      * @param array $row
      * @return array
      */
+    //Only handle columns that have been mapped, exclude the primary key
     protected function filterRow(array $row): array
     {
         return collect($row)->filter(function ($column, $heading) {
@@ -124,6 +146,18 @@ class CrudImport implements OnEachRow, WithHeadingRow, WithEvents
     {
         $config = $this->import_log->config;
         return $config[$heading] ?? null;
+    }
+
+    protected function getMatchedHeading(string $config_name): ?string
+    {
+        $config = $this->import_log->config;
+        $matching = collect($config)->filter(function($item) use($config_name){
+            return isset($item['name']) && $item['name'] === $config_name;
+        })->keys()->first();
+        if ($matching){
+            return $matching;
+        }
+        return null;
     }
 
     /**
