@@ -1,7 +1,8 @@
 # Import Operation for Backpack for Laravel
 
-[![Latest Version on Packagist][ico-version]][link-packagist]
-[![Total Downloads][ico-downloads]][link-downloads]
+[//]: # ([![Latest Version on Packagist][ico-version]][link-packagist])
+
+[//]: # ([![Total Downloads][ico-downloads]][link-downloads])
 
 Adds a configurable interface that allows your admin users to:
 
