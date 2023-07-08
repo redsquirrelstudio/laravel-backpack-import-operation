@@ -16,6 +16,9 @@ and allows you as the developer to:
 - Choose between queued or instant imports.
 - Completely customise the operation's behaviour.
 
+[!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/redsquirrelstudio)
+
+
 ![Screenshot of the operation's mapping screen](https://raw.githubusercontent.com/redsquirrelstudio/laravel-backpack-import-operation/dev/assets/screenshot.jpg?raw=true)
 
 Powering the imports in the background is [```maatwebsite/excel```][link-laravel-excel]
