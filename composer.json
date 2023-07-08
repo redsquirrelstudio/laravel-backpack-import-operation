@@ -1,6 +1,14 @@
 {
     "name": "redsquirrelstudio/laravel-backpack-import-operation",
     "description": "An operation to make configurable imports for your CRUDs using the Backpack api you know and love",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Lewis Raggett",
+            "email": "lewisraggett17@gmail.com",
+            "homepage": "https://github.com/redsquirrelstudio"
+        }
+    ],
     "autoload": {
         "psr-4": {
             "RedSquirrelStudio\\LaravelBackpackImportOperation\\": "src/"
