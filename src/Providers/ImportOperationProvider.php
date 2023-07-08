@@ -3,16 +3,27 @@
 namespace RedSquirrelStudio\LaravelBackpackImportOperation\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use RedSquirrelStudio\LaravelBackpackImportOperation\Console\Commands\ImportColumnBackpackCommand;
 
 class ImportOperationProvider extends ServiceProvider
 {
+    protected array $commands = [
+        ImportColumnBackpackCommand::class,
+    ];
+
     /**
      * Perform post-registration booting of services.
      * @return void
      */
     public function boot(): void
     {
-        $this->loadTranslationsFrom(__DIR__.'/../../resources/lang', 'import-operation');
+        //Load Translations
+        if (is_dir(resource_path('lang/vendor/backpack/import-operation'))){
+            $this->loadTranslationsFrom(resource_path('lang/vendor/backpack/import-operation'), 'import-operation');
+        }
+        else{
+            $this->loadTranslationsFrom(__DIR__.'/../../resources/lang', 'import-operation');
+        }
 
         //Load Views
         if (is_dir(resource_path('views/vendor/backpack/import-operation'))) {
@@ -35,6 +46,11 @@ class ImportOperationProvider extends ServiceProvider
             __DIR__ . '/../../resources/views/' => resource_path('views/vendor/backpack/import-operation'),
         ], 'laravel-backpack-import-operation-views');
 
+        //Publish lang
+        $this->publishes([
+            __DIR__ . '/../../resources/lang/' => resource_path('lang/vendor/backpack/import-operation'),
+        ], 'laravel-backpack-import-operation-translations');
+
         // Publishing is only necessary when using the CLI.
         if ($this->app->runningInConsole()) {
             $this->bootForConsole();
@@ -54,8 +70,16 @@ class ImportOperationProvider extends ServiceProvider
 
         // Publishing Translations
         $this->publishes([
-            __DIR__.'/../../resources/lang' => resource_path('lang/vendor/backpack'),
+            __DIR__.'/../../resources/lang' => resource_path('lang/vendor/backpack/import-operation'),
         ], 'import-operation.lang');
+    }
+
+    /**
+     * @return void
+     */
+    public function register(): void
+    {
+        $this->commands($this->commands);
     }
 
 }

@@ -24,4 +24,9 @@ return [
     'your_import_has_been_processed' => 'Your import has been processed successfully.',
     'cant_find_log' => 'The specified import could not be found.',
     'download_example' => 'Click here to download an example file.',
+    'text' => 'Text',
+    'number' => 'Number',
+    'date' => 'Date',
+    'boolean' => 'Boolean',
+    'array' => 'Array'
 ];

@@ -28,4 +28,12 @@ class DateColumn extends ImportColumn
 
         return $date;
     }
+
+    /**
+     * @return string
+     */
+    public function getName(): string
+    {
+        return __('import-operation::import.date');
+    }
 }

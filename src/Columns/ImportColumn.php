@@ -7,16 +7,19 @@ class ImportColumn implements ImportColumnInterface
 {
     protected ?string $data;
     protected array $config;
+    protected ?string $model;
 
     /**
      * Instantiate with data from the spreadsheet column
      * @param ?string $data = null
      * @param ?array $config = []
+     * @param ?string $model = null
      */
-    public function __construct(?string $data = null, ?array $config = [])
+    public function __construct(?string $data = null, ?array $config = [], ?string $model = null)
     {
         $this->data = $data;
         $this->config = $config;
+        $this->model = $model;
     }
 
     /**
@@ -41,6 +44,14 @@ class ImportColumn implements ImportColumnInterface
             return $this->config[$key];
         }
         return null;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getModel(): ?string
+    {
+        return $this->model;
     }
 
     /**

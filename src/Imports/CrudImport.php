@@ -75,7 +75,7 @@ class CrudImport implements WithCrudSupport, OnEachRow, WithHeadingRow, WithEven
             $handler_class = $this->getColumnHandlerClass($matched_config);
             if ($matched_config && $handler_class) {
                 //Instantiate handler class, process data from column
-                $handler = new $handler_class($value, $matched_config);
+                $handler = new $handler_class($value, $matched_config, $this->import_log->model);
                 $data = $handler->output();
 
                 //Assign the data to the model field specified in config

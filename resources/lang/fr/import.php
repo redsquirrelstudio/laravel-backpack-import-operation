@@ -1,0 +1,32 @@
+<?php
+
+return [
+    'import' => 'Importer',
+    'confirm_selection' => 'Confirmer la sélection',
+    'into_field' => 'dans le champ',
+    'import_data_from' => 'Importer des données du',
+    'map_fields' => 'Mapper les champs',
+    'map_fields_for' => 'Mapper les champs pour',
+    'confirm_mapping' => 'Confirmer le mappage',
+    'select_a_file' => 'Sélectionnez un fichier à importer',
+    'accepted_types' => 'Télécharger un fichier .csv, .xlsx, .xlx',
+    'select_a_column' => 'Sélectionnez une colonne de fichier',
+    'dont_import' => "Ne pas importer",
+    'primary_key' => 'Clé primaire',
+    'primary_key_not_found' => "Impossible de trouver une clé primaire pour :model, veuillez spécifier une colonne avec 'primary_key' => true ou ajouter une colonne avec la clé primaire de votre modèle.",
+    'please_map_at_least_one' => "Please map at least one file column to a field.",
+    'please_map_the_primary_key' => "Veuillez associer au moins une colonne de fichier à un champ.",
+    'confirm_import' => "Confirmer l'importation",
+    'confirm_your_import' => "Confirmez vos paramètres d'importation",
+    'click_here_to_download_file' => "Cliquez ici pour télécharger votre fichier d'importation",
+    'remap_import' => "Remapper l'importation",
+    'your_import_has_been_queued' => "Votre importation a été mise en file d'attente et sera traitée en arrière-plan.",
+    'your_import_has_been_processed' => 'Votre importation a été traitée avec succès.',
+    'cant_find_log' => "L'importation spécifiée est introuvable.",
+    'download_example' => "Cliquez ici pour télécharger un fichier d'exemple.",
+    'text' => 'Texte',
+    'number' => 'Numéro',
+    'date' => 'Date',
+    'boolean' => 'Booléen',
+    'array' => 'Tableau'
+];

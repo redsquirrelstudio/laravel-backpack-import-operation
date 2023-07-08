@@ -38,4 +38,12 @@ class ArrayColumn extends ImportColumn
 
         return null;
     }
+
+    /**
+     * @return string
+     */
+    public function getName(): string
+    {
+        return __('import-operation::import.array');
+    }
 }

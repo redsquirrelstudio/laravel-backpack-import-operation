@@ -1,0 +1,32 @@
+<?php
+
+return [
+    'import' => 'Importa',
+    'confirm_selection' => 'Conferma selezione',
+    'into_field' => 'Nel campo',
+    'import_data_from' => 'Importa dati da',
+    'map_fields' => 'Mappa campi',
+    'map_fields_for' => 'Mappa campi per',
+    'confirm_mapping' => 'Conferma mappatura',
+    'select_a_file' => 'Seleziona un file da importare',
+    'accepted_types' => 'Carica un file .csv, .xlsx o .xls',
+    'select_a_column' => 'Seleziona una colonna del file',
+    'dont_import' => "Non importare",
+    'primary_key' => 'Chiave primaria',
+    'primary_key_not_found' => "Impossibile trovare una chiave primaria per :model, specificare una colonna con 'primary_key' => true o aggiungere una colonna con la chiave primaria del modello.",
+    'please_map_at_least_one' => "Si prega di mappare almeno una colonna del file a un campo.",
+    'please_map_the_primary_key' => "Si prega di mappare una colonna del file alla chiave primaria.",
+    'confirm_import' => "Conferma importazione",
+    'confirm_your_import' => 'Conferma le impostazioni di importazione',
+    'click_here_to_download_file' => 'Clicca qui per scaricare il file di importazione',
+    'remap_import' => 'Rimappa importazione',
+    'your_import_has_been_queued' => 'La tua importazione è stata messa in coda e verrà elaborata in background.',
+    'your_import_has_been_processed' => 'La tua importazione è stata elaborata correttamente.',
+    'cant_find_log' => 'Impossibile trovare l\'importazione specificata.',
+    'download_example' => 'Clicca qui per scaricare un file di esempio.',
+    'text' => 'Testo',
+    'number' => 'Numero',
+    'date' => 'Data',
+    'boolean' => 'Booleano',
+    'array' => 'Array'
+];

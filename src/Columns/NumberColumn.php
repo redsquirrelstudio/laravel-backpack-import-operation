@@ -11,4 +11,12 @@ class NumberColumn extends ImportColumn
     {
         return is_numeric($this->data) ? (float)$this->data : null;
     }
+
+    /**
+     * @return string
+     */
+    public function getName(): string
+    {
+        return __('import-operation::import.number');
+    }
 }

@@ -1,0 +1,16 @@
+<?php
+
+namespace DummyNamespace;
+
+use RedSquirrelStudio\LaravelBackpackImportOperation\Columns\ImportColumn;
+
+class DummyColumn extends ImportColumn
+{
+    /**
+     * @return ?string
+     */
+    public function output(): mixed
+    {
+        return $this->data;
+    }
+}

@@ -34,18 +34,20 @@ the same syntax as you would to define your list views.
     3. [Boolean](#boolean)
     4. [Date](#date)
     5. [Array](#array)
-4. [Validation](#validation)
-5. [Adding an Example File](#adding-an-example-file)
-6. [Adding Your Own Columns](#adding-your-own-columns)
-7. [Custom Import Classes](#custom-import-classes)
-8. [Queued Imports](#queued-imports)
-9. [Configuration](#configuration)
+4. [Primary Keys](#primary-keys)
+5. [Validation](#validation)
+6. [Adding an Example File](#adding-an-example-file)
+7. [Adding Your Own Columns](#adding-your-own-columns)
+8. [Custom Import Classes](#custom-import-classes)
+9. [Queued Imports](#queued-imports)
+10. [Configuration](#configuration)
     1. [File Uploads](#file-uploads)
     2. [Queues](#queues)
     3. [Changing the Import log Model](#import-log)
-    4. [Customising Views](#views)
-10. [Credits](#credits)
-11. [License](#license)
+    4. [Customising Translations](#translations)
+    5. [Customising Views](#views)
+11. [Credits](#credits)
+12. [License](#license)
 
 ## Installation
 
@@ -299,34 +301,71 @@ within the ```$casts``` array, as shown below:
   ];
 ```
 
+## Primary Keys
+
+The import operation needs to know your model's primary key
+so that it knows whether to create or update with the row's data.
+By default, the operation will try to find a column you have added that
+has the model's primary key as the name.
+
+For example, if your model's primary key is id,
+the operation would use this column as the primary key:
+
+```php
+CRUD::addColumn([
+   'name' => 'id',
+   'type' => 'number',
+]);
+```
+
+You'll be able to see on the mapping screen which column
+has been identified as the primary key.
+
+If your primary key cannot be found, the operation instead will
+look for the first text or number column you have added.
+
+You can also set a column as the primary key by adding the following
+config to the column:
+```php
+CRUD::addColumn([
+   'name' => 'id',
+   'type' => 'number',
+   'primary_key' => true,
+]);
+```
+
 ## Validation
 
-Validating your imports works similarly to how you would validate a 
+Validating your imports works similarly to how you would validate a
 create or update method, call the following function within the ```setupImportOperation```
 function:
+
 ```php
     protected function setupImportOperation()
     {
         CRUD::setValidation(CustomerRequest::class);
         //Some column config...
 ```
+
 The form request should validate what is required for your model, **Not** the spreadsheet
 columns, again because the column headers shouldn't matter as the user can map them.
 
 ## Adding an Example File
-You can also add a link for your user to download an example spreadsheet with data that you 
+
+You can also add a link for your user to download an example spreadsheet with data that you
 would expect them to upload. To set this use the following function within the ```setupImportOperation```
 function:
+
 ```php
     protected function setupImportOperation()
     {
         $this->setExampleFileUrl('https://example.com/link-to-your-download/file.csv');
         //Some column config...
 ```
+
 Doing this will provide them with a link like this when uploading their file:
 
 ![Screenshot of the operation's example download](https://raw.githubusercontent.com/redsquirrelstudio/laravel-backpack-import-operation/dev/assets/example-download.jpg?raw=true)
-
 
 ## Adding Your Own Columns
 
@@ -335,12 +374,18 @@ handlers. This only takes two steps.
 
 **Step 1.**
 
-Extend the base import column class and add the ```output()``` function.
+I've included an artisan command to generate a custom column skeleton:
+
+```bash
+php artisan backpack:import-column ExampleColumn
+```
+
+This will generate a blank import column for you at ```app\Imports\Columns```.
 
 ```php
 <?php
 
-namespace App\ImportColumns;
+namespace App\Imports\Columns;
 
 use RedSquirrelStudio\LaravelBackpackImportOperation\Columns\ImportColumn;
 
@@ -353,9 +398,20 @@ class ExampleColumn extends ImportColumn
 }
 ```
 
-```$this->data``` is the input from the spreadsheet column.
-Process the data how you need to and return it from the function.
-Voila!
+When building your custom column you have access to ```$this->data``` which is the
+input from the spreadsheet column. You can also access the configuration for the import
+column using ```$this->getConfig()``` and the model that you are importing using ```$this->getModel()```.
+
+Process the data how you need to and return it from the ```output()``` function.
+
+**Voila!**
+
+By default, the column type name will take the first part of the class name
+for example, if you had ExampleColumn, the label would be
+'Example'. You can customise this by returning a string from
+the ```getName()``` function in your column.
+
+![Screenshot of a column type label](https://raw.githubusercontent.com/redsquirrelstudio/laravel-backpack-import-operation/dev/assets/column-type-label.jpg?raw=true)
 
 **Step 2.**
 
@@ -400,13 +456,14 @@ CRUD::addColumn([
 
 ## Custom Import Classes
 
-If you don't want to use the column mapping interface, you also have the option 
+If you don't want to use the column mapping interface, you also have the option
 to specify your own import class. To do this, create your import class using:
+
 ```
 php artisan make:import <YourImportName>
 ```
 
-You can then follow the [```maatwebsite/excel``` documentation][link-laravel-excel] 
+You can then follow the [```maatwebsite/excel``` documentation][link-laravel-excel]
 to build an import with finer control if required.
 
 This package provides an interface ```WithCrudSupport``` for your custom import classes that allows your IDE to
@@ -439,7 +496,6 @@ this function within the ```setupImportOperation``` function:
         $this->setImportHandler(CustomImport::class);
         //Some column config...
 ```
-
 
 ## Queued Imports
 
@@ -525,6 +581,17 @@ return [
     //...
 ```
 
+### Translations
+
+You can update the operation translations if required. To do this run:
+
+```bash
+php artisan vendor:publish --tag=laravel-backpack-import-operation-translations
+```
+
+this will publish the operation lang files to ```resources/lang/vendor/backpack/import-operation```
+The files stored in this directory take priority over the package's default lang files.
+
 ### Views
 
 You can update the operation views if required. To do this run:
@@ -533,7 +600,7 @@ You can update the operation views if required. To do this run:
 php artisan vendor:publish --tag=laravel-backpack-import-operation-views
 ```
 
-to publish the operation blade files to ```resources/views/vendor/backpack/import-operation```
+this will publish the operation blade files to ```resources/views/vendor/backpack/import-operation```
 The files stored in this directory take priority over the package's default views.
 
 ### Credits

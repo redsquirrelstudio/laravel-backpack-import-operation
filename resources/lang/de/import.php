@@ -1,0 +1,32 @@
+<?php
+
+return [
+    'import' => 'Importieren',
+    'confirm_selection' => 'Auswahl bestätigen',
+    'into_field' => 'In Feld',
+    'import_data_from' => 'Daten importieren von',
+    'map_fields' => 'Felder zuordnen',
+    'map_fields_for' => 'Felder zuordnen für',
+    'confirm_mapping' => 'Zuordnung bestätigen',
+    'select_a_file' => 'Wählen Sie eine Datei zum Importieren',
+    'accepted_types' => 'Laden Sie eine .csv-, .xlsx- oder .xls-Datei hoch',
+    'select_a_column' => 'Wählen Sie eine Spalte der Datei',
+    'dont_import' => 'Nicht importieren',
+    'primary_key' => 'Primärschlüssel',
+    'primary_key_not_found' => 'Der Primärschlüssel für :model konnte nicht gefunden werden. Bitte geben Sie eine Spalte mit "primary_key" => true an oder fügen Sie eine Spalte mit dem Primärschlüssel des Modells hinzu.',
+    'please_map_at_least_one' => 'Bitte ordnen Sie mindestens eine Dateispalte einem Feld zu.',
+    'please_map_the_primary_key' => 'Bitte ordnen Sie einer Dateispalte den Primärschlüssel zu.',
+    'confirm_import' => 'Import bestätigen',
+    'confirm_your_import' => 'Bestätigen Sie Ihre Importeinstellungen',
+    'click_here_to_download_file' => 'Klicken Sie hier, um Ihre Importdatei herunterzuladen',
+    'remap_import' => 'Import neu zuordnen',
+    'your_import_has_been_queued' => 'Ihr Importvorgang wurde in die Warteschlange gestellt und wird im Hintergrund verarbeitet.',
+    'your_import_has_been_processed' => 'Ihr Importvorgang wurde erfolgreich verarbeitet.',
+    'cant_find_log' => 'Der angegebene Import konnte nicht gefunden werden.',
+    'download_example' => 'Klicken Sie hier, um eine Beispieldatei herunterzuladen.',
+    'text' => 'Text',
+    'number' => 'Nummer',
+    'date' => 'Datum',
+    'boolean' => 'Boolean',
+    'array' => 'Array'
+];

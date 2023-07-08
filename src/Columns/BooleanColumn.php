@@ -29,4 +29,12 @@ class BooleanColumn extends ImportColumn
 
         return in_array(strtolower($this->data ?? ''), ['true', '1', 'y']);
     }
+
+    /**
+     * @return string
+     */
+    public function getName(): string
+    {
+        return __('import-operation::import.boolean');
+    }
 }

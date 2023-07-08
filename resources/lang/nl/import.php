@@ -1,0 +1,32 @@
+<?php
+
+return [
+    'import' => 'Importeren',
+    'confirm_selection' => 'Bevestig selectie',
+    'into_field' => 'In veld',
+    'import_data_from' => 'Importeer gegevens van',
+    'map_fields' => 'Koppel velden',
+    'map_fields_for' => 'Koppel velden voor',
+    'confirm_mapping' => 'Bevestig koppeling',
+    'select_a_file' => 'Selecteer een bestand om te importeren',
+    'accepted_types' => 'Upload een .csv-, .xlsx- of .xls-bestand',
+    'select_a_column' => 'Selecteer een kolom van het bestand',
+    'dont_import' => "Niet importeren",
+    'primary_key' => 'Primaire sleutel',
+    'primary_key_not_found' => "Kan geen primaire sleutel vinden voor :model. Geef alstublieft een kolom op met 'primary_key' => true of voeg een kolom toe met de primaire sleutel van uw model.",
+    'please_map_at_least_one' => "Wijs ten minste één bestandskolom toe aan een veld.",
+    'please_map_the_primary_key' => "Wijs een bestandskolom toe aan de primaire sleutel.",
+    'confirm_import' => "Bevestig importeren",
+    'confirm_your_import' => 'Bevestig uw importinstellingen',
+    'click_here_to_download_file' => 'Klik hier om uw importbestand te downloaden',
+    'remap_import' => 'Opnieuw koppelen importeren',
+    'your_import_has_been_queued' => 'Uw import is in de wachtrij geplaatst en wordt verwerkt op de achtergrond.',
+    'your_import_has_been_processed' => 'Uw import is succesvol verwerkt.',
+    'cant_find_log' => 'De opgegeven import kan niet worden gevonden.',
+    'download_example' => 'Klik hier om een voorbeeldbestand te downloaden.',
+    'text' => 'Tekst',
+    'number' => 'Nummer',
+    'date' => 'Datum',
+    'boolean' => 'Boolean',
+    'array' => 'Array'
+];

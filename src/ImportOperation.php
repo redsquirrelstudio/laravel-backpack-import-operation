@@ -18,6 +18,7 @@ use RedSquirrelStudio\LaravelBackpackImportOperation\Imports\CrudImport;
 use RedSquirrelStudio\LaravelBackpackImportOperation\Imports\QueuedCrudImport;
 use RedSquirrelStudio\LaravelBackpackImportOperation\Models\ImportLog;
 use RedSquirrelStudio\LaravelBackpackImportOperation\Requests\ImportFileRequest;
+use RedSquirrelStudio\LaravelBackpackImportOperation\Exceptions\PrimaryKeyNotFoundException;
 use Exception;
 
 trait ImportOperation
@@ -99,8 +100,8 @@ trait ImportOperation
             'name' => 'file',
             'label' => __('import-operation::import.select_a_file'),
             'type' => 'upload',
-            'hint' => __('import-operation::import.accepted_types').'. '.
-                ($this->example_file_url ? '<a target="_blank" download title="'.__('import-operation::import.download_example').'" href="'.$this->example_file_url.'">'.__('import-operation::import.download_example').'</a>' : ''),
+            'hint' => __('import-operation::import.accepted_types') . '. ' .
+                ($this->example_file_url ? '<a target="_blank" download title="' . __('import-operation::import.download_example') . '" href="' . $this->example_file_url . '">' . __('import-operation::import.download_example') . '</a>' : ''),
         ]);
     }
 
@@ -183,7 +184,7 @@ trait ImportOperation
         ]);
 
         //If a custom import is set, skip directly to handle the import
-        if (!is_null($this->custom_import_handler)){
+        if (!is_null($this->custom_import_handler)) {
             return $this->handleImport($log->id);
         }
 
@@ -238,7 +239,9 @@ trait ImportOperation
             $chosen_field = $request->get($column['name'] . '__heading');
             if ($chosen_field) {
                 $config[$chosen_field] = collect($column)->filter(
-                    fn($value, $key) => in_array($key, ['name', 'label', 'type', 'primary_key', 'options', 'separator', 'multiple']
+                    fn($value, $key) => in_array($key, [
+                            'name', 'label', 'type', 'primary_key', 'options', 'separator', 'multiple',
+                        ]
                     ))->toArray();
             }
         }
@@ -301,7 +304,7 @@ trait ImportOperation
         $import_class = $import_should_queue ? CrudImport::class : QueuedCrudImport::class;
 
         //Set custom import class if it has been specified
-        if (!is_null($this->custom_import_handler)){
+        if (!is_null($this->custom_import_handler)) {
             $import_class = $this->custom_import_handler;
         }
 
@@ -364,9 +367,7 @@ trait ImportOperation
                 if ($first_column) {
                     $primary_key = $first_column['name'];
                 } else {
-                    throw new Exception(__('import-operation::import.primary_key_not_found', [
-                        'model' => get_class($this->crud->model)
-                    ]));
+                    throw new PrimaryKeyNotFoundException(get_class($this->crud->model));
                 }
             }
         }

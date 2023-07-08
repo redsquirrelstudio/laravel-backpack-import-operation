@@ -11,4 +11,12 @@ class TextColumn extends ImportColumn
     {
         return $this->data;
     }
+
+    /**
+     * @return string
+     */
+    public function getName(): string
+    {
+        return __('import-operation::import.text');
+    }
 }
