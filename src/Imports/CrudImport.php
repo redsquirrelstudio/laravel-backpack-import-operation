@@ -3,7 +3,6 @@
 namespace RedSquirrelStudio\LaravelBackpackImportOperation\Imports;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Validator;
 use Maatwebsite\Excel\Concerns\OnEachRow;
@@ -12,7 +11,7 @@ use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Maatwebsite\Excel\Events\AfterImport;
 use Maatwebsite\Excel\Row;
 use RedSquirrelStudio\LaravelBackpackImportOperation\Columns\TextColumn;
-use RedSquirrelStudio\LaravelBackpackImportOperation\Interfaces\CrudImportInterface;
+use RedSquirrelStudio\LaravelBackpackImportOperation\Interfaces\WithCrudSupport;
 use RedSquirrelStudio\LaravelBackpackImportOperation\Models\ImportLog;
 use Exception;
 

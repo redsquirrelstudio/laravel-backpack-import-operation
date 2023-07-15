@@ -231,7 +231,6 @@ trait ImportOperation
     public function handleMapping(Request $request, int $id): RedirectResponse
     {
         $this->crud->hasAccessOrFail('import');
-
         $log = $this->getCurrentImportLog($id);
 
         $config = [];
@@ -251,7 +250,10 @@ trait ImportOperation
                 'import' => __('import-operation::import.please_map_at_least_one'),
             ]);
         }
-        if (!isset($config[$log->model_primary_key])) {
+
+        if (is_null(collect($config)->filter(function($item) use($log){
+            return $item['name'] === $log->model_primary_key;
+        })->first())) {
             return redirect($this->crud->route . '/import/' . $id . '/map')->withErrors([
                 'import' => __('import-operation::import.please_map_the_primary_key'),
             ]);
