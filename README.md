@@ -639,6 +639,6 @@ MIT. Please see the [license file](license.md) for more information.
 
 [link-laravel-queue-docs]: https://laravel.com/docs/queues
 
-[link-backpack]: https://github.com/backpack
+[link-backpack]: https://github.com/backpack](https://github.com/Laravel-Backpack
 
 [link-me]: https://github.com/redsquirrelstudio
