@@ -59,6 +59,12 @@ the same syntax as you would to define your list views.
 
 Require the package with composer:
 
+### Backpack V5
+```bash
+composer require redsquirrelstudio/laravel-backpack-import-operation:1.0.0
+```
+
+### Backpack V6
 ```bash
 composer require redsquirrelstudio/laravel-backpack-import-operation
 ```
