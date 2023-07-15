@@ -39,7 +39,7 @@
 @section('content')
 
     <div class="row">
-        <div class="{{ $crud->getCreateContentClass() }}">
+        <div class="col-md-8">
             {{-- Default box --}}
 
             @include('crud::inc.grouped_errors')
@@ -56,7 +56,7 @@
                     @include('crud::form_content', [ 'fields' => $crud->fields(), 'action' => 'create' ])
                 @endif
                 {{-- This makes sure that all field assets are loaded. --}}
-                <div class="d-none" id="parentLoadedAssets">{{ json_encode(Assets::loaded()) }}</div>
+                <div class="d-none" id="parentLoadedAssets">{{ json_encode(Basset::loaded()) }}</div>
 
                 <button title="@lang('import-operation::import.confirm_selection')"
                     class="btn btn-success">

@@ -55,7 +55,7 @@
                 {{-- load the view from the application if it exists, otherwise load the one in the package --}}
 
                 {{-- This makes sure that all field assets are loaded. --}}
-                <div class="d-none" id="parentLoadedAssets">{{ json_encode(Assets::loaded()) }}</div>
+                <div class="d-none" id="parentLoadedAssets">{{ json_encode(Basset::loaded()) }}</div>
 
                 <div class="card">
                     <div class="card-body row">

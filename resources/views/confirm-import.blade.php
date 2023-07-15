@@ -132,8 +132,7 @@
                     </div>
                 </div>
                 {{-- This makes sure that all field assets are loaded. --}}
-                <div class="d-none" id="parentLoadedAssets">{{ json_encode(Assets::loaded()) }}</div>
-
+                <div class="d-none" id="parentLoadedAssets">{{ json_encode(Basset::loaded()) }}</div>
                 <div class="d-flex">
                     <button title="@lang('import-operation::import.confirm_selection')"
                             class="btn btn-success mr-2">
