@@ -201,7 +201,7 @@ trait ImportOperation
         if ($user_mapping_disabled){
             $config = [];
             foreach($this->crud->columns() as $column){
-                $config[$column->name] = $column;
+                $config[$column['name']] = $column;
             }
             $log->config = $config;
             $log->save();
