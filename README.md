@@ -43,15 +43,16 @@ the same syntax as you would to define your list views.
 6. [Adding an Example File](#adding-an-example-file)
 7. [Adding Your Own Columns](#adding-your-own-columns)
 8. [Custom Import Classes](#custom-import-classes)
-9. [Queued Imports](#queued-imports)
-10. [Configuration](#configuration)
+9. [Disabling User Mapping](#disabling-user-mapping)
+10. [Queued Imports](#queued-imports)
+11. [Configuration](#configuration)
     1. [File Uploads](#file-uploads)
     2. [Queues](#queues)
     3. [Changing the Import log Model](#import-log)
     4. [Customising Translations](#translations)
     5. [Customising Views](#views)
-11. [Credits](#credits)
-12. [License](#license)
+12. [Credits](#credits)
+13. [License](#license)
 
 ## Installation
 
@@ -59,12 +60,6 @@ the same syntax as you would to define your list views.
 
 Require the package with composer:
 
-### Backpack V5
-```bash
-composer require redsquirrelstudio/laravel-backpack-import-operation:1.0.0
-```
-
-### Backpack V6
 ```bash
 composer require redsquirrelstudio/laravel-backpack-import-operation
 ```
@@ -505,6 +500,35 @@ this function within the ```setupImportOperation``` function:
     {
         $this->setImportHandler(CustomImport::class);
         //Some column config...
+```
+
+## Disabling User Mapping 
+
+Sometimes, you may not want the user to map their columns, or just need a fast import.
+In these cases, you can disable the user mapping step.
+
+When user mapping is disabled, the import handler will match the spreadsheet headings to your CRUD column config.
+
+For example:
+A spreadsheet column called "name" or "Name" would be matched with this config:
+
+```php
+CRUD::addColumn([
+    'name' => 'name',
+    'label' => 'Name',
+    'type' => 'text',
+]);
+```
+
+To enable this behaviour, add this one line
+of code to the ```setupImportOperation()``` function:
+
+```php
+    //...
+    protected function setupImportOperation()
+    {
+        $this->disableUserMapping();
+    //...
 ```
 
 ## Queued Imports
