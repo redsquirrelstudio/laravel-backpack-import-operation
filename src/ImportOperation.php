@@ -106,6 +106,15 @@ trait ImportOperation
     }
 
     /**
+     * Disable the user column mapping step of the import
+     * @return void
+     */
+    public function disableUserMapping(): void
+    {
+        CRUD::setOperationSetting("disableUserMapping", true);
+    }
+
+    /**
      * Queue imports to be handled in the background
      * @return void
      */
@@ -185,6 +194,17 @@ trait ImportOperation
 
         //If a custom import is set, skip directly to handle the import
         if (!is_null($this->custom_import_handler)) {
+            return $this->handleImport($log->id);
+        }
+
+        $user_mapping_disabled = $this->crud->getOperationSetting('disableUserMapping', 'import') ?? false;
+        if ($user_mapping_disabled){
+            $config = [];
+            foreach($this->crud->columns() as $column){
+                $config[$column->name] = $column;
+            }
+            $log->config = $config;
+            $log->save();
             return $this->handleImport($log->id);
         }
 
