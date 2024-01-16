@@ -56,6 +56,15 @@ the same syntax as you would to define your list views.
 
 ## Installation
 
+**Environment Requirements**
+- PHP extension php_zip
+- PHP extension php_xml
+- PHP extension php_gd2
+- PHP extension php_iconv 
+- PHP extension php_simplexml
+- PHP extension php_xmlreader
+- PHP extension php_zlib
+
 **Step 1.**
 
 Require the package with composer:
