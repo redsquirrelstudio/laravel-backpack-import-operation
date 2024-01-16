@@ -66,7 +66,6 @@ class CrudImport implements WithCrudSupport, OnEachRow, WithHeadingRow, WithEven
         }
 
         //Loop through row headings
-        $update_data = [];
         foreach ($row as $heading => $value) {
             $data = null;
             //Get the config that matches the current column heading
@@ -79,7 +78,7 @@ class CrudImport implements WithCrudSupport, OnEachRow, WithHeadingRow, WithEven
 
                 //Assign the data to the model field specified in config
                 $model_field = $matched_config['name'];
-                $update_data[$model_field] = $data;
+                $entry->{$model_field} = $data;
             }
         }
         //Save the entry
@@ -103,7 +102,7 @@ class CrudImport implements WithCrudSupport, OnEachRow, WithHeadingRow, WithEven
             $entry = $model::where($primary_key, $primary_key_value)->first();
         }
         if (!$entry) {
-            $entry = new $model();
+            $entry = new $model([$primary_key => $primary_key_value]);
         }
         return $entry;
     }
