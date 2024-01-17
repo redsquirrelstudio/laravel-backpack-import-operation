@@ -430,7 +430,8 @@ the ```getName()``` function in your column.
 **Step 2.**
 
 Add your new class to the file at ```config/backpack/operations/import.php``` under
-the ```'column_aliases'``` array:
+the ```'column_aliases'``` array. The key should be what you specify as the column type in
+```setupImportOperation```
 
 ```php
     //...
@@ -441,7 +442,7 @@ the ```'column_aliases'``` array:
         'date' => Columns\DateColumn::class,
         'number' => Columns\NumberColumn::class,
         'text' => Columns\TextColumn::class,
-        'example' => App\ImportColumns\ExampleColumn::class
+        'column_type' => App\Imports\Columns\ExampleColumn::class
     ]
 ```
 
