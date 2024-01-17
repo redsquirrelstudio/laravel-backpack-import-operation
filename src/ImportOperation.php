@@ -264,9 +264,13 @@ trait ImportOperation
 
         $config = [];
         foreach ($this->crud->columns() as $column) {
-            $chosen_field = $request->get($column['name'] . '__heading');
-            if ($chosen_field) {
-                $config[$chosen_field] = collect($column)->filter(
+            $chosen_heading = $request->get($column['name'] . '__heading');
+            if ($chosen_heading) {
+                if (!isset($config[$chosen_heading])){
+                    $config[$chosen_heading] = [];
+                }
+
+                $config[$chosen_heading][] = collect($column)->filter(
                     fn($value, $key) => in_array($key, [
                             'name', 'label', 'type', 'primary_key', 'options', 'separator', 'multiple',
                         ]
@@ -280,8 +284,8 @@ trait ImportOperation
             ]);
         }
 
-        if (is_null(collect($config)->filter(function($item) use($log){
-            return $item['name'] === $log->model_primary_key;
+        if (is_null(collect($config)->filter(function($items) use($log){
+            return collect($items)->where('name', $log->model_primary_key)->count() > 0;
         })->first())) {
             return redirect($this->crud->route . '/import/' . $id . '/map')->withErrors([
                 'import' => __('import-operation::import.please_map_the_primary_key'),
