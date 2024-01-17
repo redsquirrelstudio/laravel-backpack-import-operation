@@ -316,6 +316,28 @@ within the ```$casts``` array, as shown below:
   ];
 ```
 
+In the case where you would like the user to be able to specify a comma seperated list of any values. You can
+add the following to the CRUD column config.
+
+```php
+CRUD::addColumn([
+   'name' => 'type',
+   'label' => 'Customer Type',
+   'type' => 'array',
+   'multiple' => true,
+   'options' => 'any'
+]);  
+```
+With this configuration, the user could put whatever they like.
+For example, if they imported dog,cat,rat - It would be saved to the model as:
+```php
+[
+    'dog',
+    'cat',
+    'rat'
+]
+```
+
 ## Primary Keys
 
 The import operation needs to know your model's primary key
