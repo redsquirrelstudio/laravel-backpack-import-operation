@@ -338,6 +338,14 @@ For example, if they imported dog,cat,rat - It would be saved to the model as:
 ]
 ```
 
+```'options' => 'any'``` 
+
+cannot be used without
+
+```'multiple' => true ```
+
+as it does not make sense for this column type. In this case, just use a text column.
+
 ## Primary Keys
 
 The import operation needs to know your model's primary key
