@@ -323,7 +323,7 @@ trait ImportOperation
         $log->save();
 
         $import_should_queue = $this->crud->getOperationSetting('queueImport', 'import') ?? false;
-        $import_class = $import_should_queue ? CrudImport::class : QueuedCrudImport::class;
+        $import_class = $import_should_queue ? QueuedCrudImport::class : CrudImport::class;
 
         //Set custom import class if it has been specified
         if (!is_null($this->custom_import_handler)) {
