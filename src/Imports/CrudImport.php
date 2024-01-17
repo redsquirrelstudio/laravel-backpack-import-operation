@@ -4,6 +4,7 @@ namespace RedSquirrelStudio\LaravelBackpackImportOperation\Imports;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Maatwebsite\Excel\Concerns\OnEachRow;
 use Maatwebsite\Excel\Concerns\WithEvents;
@@ -198,6 +199,10 @@ class CrudImport implements WithCrudSupport, OnEachRow, WithHeadingRow, WithEven
                 $log = $importer->getImportLog();
                 $log->completed_at = Carbon::now();
                 $log->save();
+
+                if ($log->delete_file_after_import){
+                    Storage::disk($log->disk)->delete($log->file_path);
+                }
             },
         ];
     }

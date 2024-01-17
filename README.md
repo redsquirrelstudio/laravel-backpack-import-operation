@@ -44,15 +44,16 @@ the same syntax as you would to define your list views.
 7. [Adding Your Own Columns](#adding-your-own-columns)
 8. [Custom Import Classes](#custom-import-classes)
 9. [Disabling User Mapping](#disabling-user-mapping)
-10. [Queued Imports](#queued-imports)
-11. [Configuration](#configuration)
+10. [Delete Spreadsheet on Completion](#delete-spreadsheet-on-completion)
+11. [Queued Imports](#queued-imports)
+12. [Configuration](#configuration)
     1. [File Uploads](#file-uploads)
     2. [Queues](#queues)
     3. [Changing the Import log Model](#import-log)
     4. [Customising Translations](#translations)
     5. [Customising Views](#views)
-12. [Credits](#credits)
-13. [License](#license)
+13. [Credits](#credits)
+14. [License](#license)
 
 ## Installation
 
@@ -538,6 +539,19 @@ of code to the ```setupImportOperation()``` function:
     protected function setupImportOperation()
     {
         $this->disableUserMapping();
+    //...
+```
+
+## Delete Spreadsheet on Completion
+By default, the uploaded spreadsheet will remain in storage after an import is completed.
+This is useful for debugging/logging purposes but may not suit your requirements.
+If you would like your file to be deleted after an import is complete, add this one line
+of code to the ```setupImportOperation()``` function:
+```php
+  //...
+    protected function setupImportOperation()
+    {
+        $this->deleteFileAfterImport();
     //...
 ```
 

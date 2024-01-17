@@ -22,11 +22,15 @@ class ImportLog extends Model
     protected $primaryKey = 'id';
     public $timestamps = true;
     protected $guarded = ['id'];
-    protected $fillable = ['user_id', 'file_path', 'disk', 'model_primary_key', 'model', 'config', 'started_at', 'completed_at'];
+    protected $fillable = [
+        'user_id', 'file_path', 'disk', 'model_primary_key', 'model',
+        'config', 'delete_file_after_import', 'started_at', 'completed_at'
+    ];
     protected $casts = [
         'config' => 'array',
         'started_at' => 'datetime',
         'completed_at' => 'datetime',
+        'delete_file_after_import' => 'boolean',
     ];
 
     /*

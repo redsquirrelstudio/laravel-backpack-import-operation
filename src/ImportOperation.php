@@ -124,6 +124,15 @@ trait ImportOperation
     }
 
     /**
+     * Delete the spreadsheet file after an import is complete
+     * @return void
+     */
+    public function deleteFileAfterImport(): void
+    {
+        CRUD::setOperationSetting('deleteFileAfterImport', true);
+    }
+
+    /**
      * Set a custom import class, this will skip the mapping phase on the front end
      * @param string $import_class
      * @return void
@@ -318,6 +327,11 @@ trait ImportOperation
         }
 
         $formRequest = $this->crud->getFormRequest();
+
+        $file_should_be_deleted = $this->crud->getOperationSetting('deleteFileAfterImport', 'import') ?? false;
+        if ($file_should_be_deleted){
+            $log->delete_file_after_import = true;
+        }
 
         $log->started_at = Carbon::now();
         $log->save();
