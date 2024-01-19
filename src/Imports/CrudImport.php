@@ -4,6 +4,7 @@ namespace RedSquirrelStudio\LaravelBackpackImportOperation\Imports;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Maatwebsite\Excel\Concerns\OnEachRow;
 use Maatwebsite\Excel\Concerns\WithEvents;
@@ -70,15 +71,18 @@ class CrudImport implements WithCrudSupport, OnEachRow, WithHeadingRow, WithEven
             $data = null;
             //Get the config that matches the current column heading
             $matched_config = $this->getMatchedConfig($heading);
-            $handler_class = $this->getColumnHandlerClass($matched_config);
-            if ($matched_config && $handler_class) {
-                //Instantiate handler class, process data from column
-                $handler = new $handler_class($value, $matched_config, $this->import_log->model);
-                $data = $handler->output();
+            $handler_classes = $this->getColumnHandlerClasses($matched_config);
 
-                //Assign the data to the model field specified in config
-                $model_field = $matched_config['name'];
-                $entry->{$model_field} = $data;
+            if ($matched_config && count($handler_classes) === count($matched_config)) {
+                foreach($handler_classes as $index => $handler_class){
+                    //Instantiate handler class, process data from column
+                    $handler = new $handler_class($value, $matched_config[$index], $this->import_log->model);
+                    $data = $handler->output();
+
+                    //Assign the data to the model field specified in config
+                    $model_field = $matched_config[$index]['name'];
+                    $entry->{$model_field} = $data;
+                }
             }
         }
         //Save the entry
@@ -115,8 +119,8 @@ class CrudImport implements WithCrudSupport, OnEachRow, WithHeadingRow, WithEven
         $primary_key = $this->import_log->model_primary_key;
 
         $primary_column_header = null;
-        foreach ($this->import_log->config as $column_header => $column_config) {
-            if ($column_config['name'] === $primary_key) {
+        foreach ($this->import_log->config as $column_header => $column_configs) {
+            if (collect($column_configs)->where('name', $primary_key)->count() > 0) {
                 $primary_column_header = $column_header;
             }
         }
@@ -127,12 +131,11 @@ class CrudImport implements WithCrudSupport, OnEachRow, WithHeadingRow, WithEven
      * @param array $row
      * @return array
      */
-    //Only handle columns that have been mapped, exclude the primary key
+    //Only handle columns that have been mapped
     protected function filterRow(array $row): array
     {
         return collect($row)->filter(function ($column, $heading) {
-            $primary_column_header = $this->getPrimaryKeyColumnHeader();
-            return $heading !== $primary_column_header && in_array($heading, array_keys($this->import_log->config));
+            return in_array($heading, array_keys($this->import_log->config));
         })->toArray();
     }
 
@@ -160,22 +163,26 @@ class CrudImport implements WithCrudSupport, OnEachRow, WithHeadingRow, WithEven
 
     /**
      * @param array|null $matched_config
-     * @return string|null
+     * @return array{string}
      */
-    protected function getColumnHandlerClass(?array $matched_config = null): ?string
+    protected function getColumnHandlerClasses(?array $matched_config = null): array
     {
+        $columns_types = [];
         if ($matched_config) {
-            if (!isset($matched_config['type'])) {
-                return TextColumn::class;
-            }
-            if (in_array($matched_config['type'], array_keys(config('backpack.operations.import.column_aliases')))) {
-                $aliases = config('backpack.operations.import.column_aliases');
-                return $aliases[$matched_config['type']];
-            } else {
-                return $matched_config['type'];
+            foreach($matched_config as $matched_config_column){
+                if (!isset($matched_config_column['type'])) {
+                    $column_types[] = TextColumn::class;
+                }
+                if (in_array($matched_config_column['type'], array_keys(config('backpack.operations.import.column_aliases')))) {
+                    $aliases = config('backpack.operations.import.column_aliases');
+                    $column_types[] = $aliases[$matched_config_column['type']];
+                } else {
+                    $column_types[] = $matched_config_column['type'];
+                }
             }
         }
-        return TextColumn::class;
+
+        return $column_types;
     }
 
 
@@ -198,6 +205,10 @@ class CrudImport implements WithCrudSupport, OnEachRow, WithHeadingRow, WithEven
                 $log = $importer->getImportLog();
                 $log->completed_at = Carbon::now();
                 $log->save();
+
+                if ($log->delete_file_after_import){
+                    Storage::disk($log->disk)->delete($log->file_path);
+                }
             },
         ];
     }

@@ -124,6 +124,15 @@ trait ImportOperation
     }
 
     /**
+     * Delete the spreadsheet file after an import is complete
+     * @return void
+     */
+    public function deleteFileAfterImport(): void
+    {
+        CRUD::setOperationSetting('deleteFileAfterImport', true);
+    }
+
+    /**
      * Set a custom import class, this will skip the mapping phase on the front end
      * @param string $import_class
      * @return void
@@ -201,7 +210,7 @@ trait ImportOperation
         if ($user_mapping_disabled){
             $config = [];
             foreach($this->crud->columns() as $column){
-                $config[$column['name']] = $column;
+                $config[$column['name']] = [$column];
             }
             $log->config = $config;
             $log->save();
@@ -255,9 +264,13 @@ trait ImportOperation
 
         $config = [];
         foreach ($this->crud->columns() as $column) {
-            $chosen_field = $request->get($column['name'] . '__heading');
-            if ($chosen_field) {
-                $config[$chosen_field] = collect($column)->filter(
+            $chosen_heading = $request->get($column['name'] . '__heading');
+            if ($chosen_heading) {
+                if (!isset($config[$chosen_heading])){
+                    $config[$chosen_heading] = [];
+                }
+
+                $config[$chosen_heading][] = collect($column)->filter(
                     fn($value, $key) => in_array($key, [
                             'name', 'label', 'type', 'primary_key', 'options', 'separator', 'multiple',
                         ]
@@ -271,8 +284,8 @@ trait ImportOperation
             ]);
         }
 
-        if (is_null(collect($config)->filter(function($item) use($log){
-            return $item['name'] === $log->model_primary_key;
+        if (is_null(collect($config)->filter(function($items) use($log){
+            return collect($items)->where('name', $log->model_primary_key)->count() > 0;
         })->first())) {
             return redirect($this->crud->route . '/import/' . $id . '/map')->withErrors([
                 'import' => __('import-operation::import.please_map_the_primary_key'),
@@ -319,11 +332,16 @@ trait ImportOperation
 
         $formRequest = $this->crud->getFormRequest();
 
+        $file_should_be_deleted = $this->crud->getOperationSetting('deleteFileAfterImport', 'import') ?? false;
+        if ($file_should_be_deleted){
+            $log->delete_file_after_import = true;
+        }
+
         $log->started_at = Carbon::now();
         $log->save();
 
         $import_should_queue = $this->crud->getOperationSetting('queueImport', 'import') ?? false;
-        $import_class = $import_should_queue ? CrudImport::class : QueuedCrudImport::class;
+        $import_class = $import_should_queue ? QueuedCrudImport::class : CrudImport::class;
 
         //Set custom import class if it has been specified
         if (!is_null($this->custom_import_handler)) {

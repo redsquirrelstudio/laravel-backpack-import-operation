@@ -44,15 +44,16 @@ the same syntax as you would to define your list views.
 7. [Adding Your Own Columns](#adding-your-own-columns)
 8. [Custom Import Classes](#custom-import-classes)
 9. [Disabling User Mapping](#disabling-user-mapping)
-10. [Queued Imports](#queued-imports)
-11. [Configuration](#configuration)
+10. [Delete Spreadsheet on Completion](#delete-spreadsheet-on-completion)
+11. [Queued Imports](#queued-imports)
+12. [Configuration](#configuration)
     1. [File Uploads](#file-uploads)
     2. [Queues](#queues)
     3. [Changing the Import log Model](#import-log)
     4. [Customising Translations](#translations)
     5. [Customising Views](#views)
-12. [Credits](#credits)
-13. [License](#license)
+13. [Credits](#credits)
+14. [License](#license)
 
 ## Installation
 
@@ -315,6 +316,36 @@ within the ```$casts``` array, as shown below:
   ];
 ```
 
+In the case where you would like the user to be able to specify a comma seperated list of any values. You can
+add the following to the CRUD column config.
+
+```php
+CRUD::addColumn([
+   'name' => 'type',
+   'label' => 'Customer Type',
+   'type' => 'array',
+   'multiple' => true,
+   'options' => 'any'
+]);  
+```
+With this configuration, the user could put whatever they like.
+For example, if they imported dog,cat,rat - It would be saved to the model as:
+```php
+[
+    'dog',
+    'cat',
+    'rat'
+]
+```
+
+```'options' => 'any'``` 
+
+cannot be used without
+
+```'multiple' => true ```
+
+as it does not make sense for this column type. In this case, just use a text column.
+
 ## Primary Keys
 
 The import operation needs to know your model's primary key
@@ -430,7 +461,8 @@ the ```getName()``` function in your column.
 **Step 2.**
 
 Add your new class to the file at ```config/backpack/operations/import.php``` under
-the ```'column_aliases'``` array:
+the ```'column_aliases'``` array. The key should be what you specify as the column type in
+```setupImportOperation```
 
 ```php
     //...
@@ -441,7 +473,7 @@ the ```'column_aliases'``` array:
         'date' => Columns\DateColumn::class,
         'number' => Columns\NumberColumn::class,
         'text' => Columns\TextColumn::class,
-        'example' => App\ImportColumns\ExampleColumn::class
+        'column_type' => App\Imports\Columns\ExampleColumn::class
     ]
 ```
 
@@ -537,6 +569,19 @@ of code to the ```setupImportOperation()``` function:
     protected function setupImportOperation()
     {
         $this->disableUserMapping();
+    //...
+```
+
+## Delete Spreadsheet on Completion
+By default, the uploaded spreadsheet will remain in storage after an import is completed.
+This is useful for debugging/logging purposes but may not suit your requirements.
+If you would like your file to be deleted after an import is complete, add this one line
+of code to the ```setupImportOperation()``` function:
+```php
+  //...
+    protected function setupImportOperation()
+    {
+        $this->deleteFileAfterImport();
     //...
 ```
 

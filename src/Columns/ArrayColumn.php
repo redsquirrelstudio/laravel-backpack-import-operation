@@ -15,22 +15,27 @@ class ArrayColumn extends ImportColumn
         $options = $this->getConfig('options');
 
         if ($options) {
-            if ($multiple){
+            if ($multiple) {
                 $values = [];
                 $data_split = explode($separator, $this->data);
-                foreach($data_split as $data_value){
-                    foreach ($options as $value => $option) {
-                        if ($option === $data_value) {
-                            $values[] = $value;
+                foreach ($data_split as $data_value) {
+                    if (is_array($options)) {
+                        foreach ($options as $value => $option) {
+                            if ($option === $data_value) {
+                                $values[] = $value;
+                            }
                         }
+                    } else if ($options === 'any') {
+                        $values[] = $data_value;
                     }
                 }
                 return $values;
-            }
-            else{
-                foreach ($options as $value => $option) {
-                    if ($option === $this->data) {
-                        return $value;
+            } else {
+                if (is_array($options)) {
+                    foreach ($options as $value => $option) {
+                        if ($option === $this->data) {
+                            return $value;
+                        }
                     }
                 }
             }
