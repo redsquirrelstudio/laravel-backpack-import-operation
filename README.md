@@ -691,13 +691,25 @@ php artisan vendor:publish --tag=laravel-backpack-import-operation-views
 this will publish the operation blade files to ```resources/views/vendor/backpack/import-operation```
 The files stored in this directory take priority over the package's default views.
 
-### Credits
+## Restricting Access
+Like most operations in Backpack, you can restrict user access using the following line of code in your CRUD Controller's setup function:
+```php
+    public function setup()
+    {
+        //...
+        CRUD::denyAccess('import');
+        //...
+    }
+```
+
+
+## Credits
 
 - [Lewis Raggett][link-me] :: Package Creator
 - [Cristian Tabacitu][link-backpack] :: Backpack for Laravel Creator
 - [Spartner][link-laravel-excel] :: Laravel Excel Creator
 
-### License
+## License
 
 MIT. Please see the [license file](license.md) for more information.
 

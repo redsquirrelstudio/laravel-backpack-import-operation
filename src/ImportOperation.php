@@ -94,6 +94,7 @@ trait ImportOperation
      */
     protected function setupImportFileUpload(): void
     {
+        $this->crud->hasAccessOrFail('import');
         CRUD::setValidation(ImportFileRequest::class);
 
         CRUD::addField([
@@ -228,6 +229,7 @@ trait ImportOperation
      */
     public function mapFields(HeadingRowImport $headingImport, int $id): View|RedirectResponse
     {
+        $this->crud->hasAccessOrFail('import');
         //Find the import log
         $log = $this->getCurrentImportLog($id);
 
