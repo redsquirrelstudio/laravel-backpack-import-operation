@@ -208,9 +208,9 @@ trait ImportOperation
         }
 
         $user_mapping_disabled = $this->crud->getOperationSetting('disableUserMapping', 'import') ?? false;
-        if ($user_mapping_disabled){
+        if ($user_mapping_disabled) {
             $config = [];
-            foreach($this->crud->columns() as $column){
+            foreach ($this->crud->columns() as $column) {
                 $config[$column['name']] = [$column];
             }
             $log->config = $config;
@@ -243,12 +243,15 @@ trait ImportOperation
             $column_headers = $column_headers[0];
         } while (isset($column_headers[0]) && is_array($column_headers[0]));
 
+        $required_columns = $this->getRequiredImportColumns();
+
         return view('import-operation::map-fields', [
             'crud' => $this->crud,
             'title' => CRUD::getTitle() ?? __('import-operation::import.import') . ' ' . $this->crud->entity_name_plural,
             'column_headers' => $column_headers,
             'import' => $log,
             'primary_key' => $log->model_primary_key,
+            'required_columns' => $required_columns,
         ]);
     }
 
@@ -268,7 +271,7 @@ trait ImportOperation
         foreach ($this->crud->columns() as $column) {
             $chosen_heading = $request->get($column['name'] . '__heading');
             if ($chosen_heading) {
-                if (!isset($config[$chosen_heading])){
+                if (!isset($config[$chosen_heading])) {
                     $config[$chosen_heading] = [];
                 }
 
@@ -286,13 +289,32 @@ trait ImportOperation
             ]);
         }
 
-        if (is_null(collect($config)->filter(function($items) use($log){
+        if (is_null(collect($config)->filter(function ($items) use ($log) {
             return collect($items)->where('name', $log->model_primary_key)->count() > 0;
         })->first())) {
             return redirect($this->crud->route . '/import/' . $id . '/map')->withErrors([
                 'import' => __('import-operation::import.please_map_the_primary_key'),
             ]);
         }
+
+        $required_errors = [];
+        $required_columns = $this->getRequiredImportColumns();
+        foreach ($required_columns as $required_column) {
+            if (is_null(collect($config)->filter(fn($items) => collect($items)->where('name', $required_column)->count() > 0
+            )->first())) {
+                $column_config = collect($this->crud->columns())->where('name', $required_column)->first();
+                $column_label = $column_config ? $column_config['label'] : ucfirst(str_replace(' ', '', $required_column));
+
+                $required_errors[] = [$required_column => __('validation.required', [
+                    'attribute' => $column_label
+                ])];
+            }
+        }
+
+        if (count($required_errors) > 0){
+            return redirect($this->crud->route . '/import/' . $id . '/map')->withErrors($required_errors);
+        }
+
 
         $log->config = $config;
         $log->save();
@@ -335,7 +357,7 @@ trait ImportOperation
         $formRequest = $this->crud->getFormRequest();
 
         $file_should_be_deleted = $this->crud->getOperationSetting('deleteFileAfterImport', 'import') ?? false;
-        if ($file_should_be_deleted){
+        if ($file_should_be_deleted) {
             $log->delete_file_after_import = true;
         }
 
@@ -433,5 +455,21 @@ trait ImportOperation
         }
         $import_validator = Validator::make($log->toArray(), $rules);
         return $import_validator->passes();
+    }
+
+    /**
+     * @return array
+     */
+    protected function getRequiredImportColumns(): array
+    {
+        $required_columns = [];
+        $formRequest = $this->crud->getFormRequest();
+        $rules = $formRequest ? (new $formRequest)->rules() : null;
+        if ($rules) {
+            $required_columns = collect($rules)->filter(function ($rule) {
+                return in_array('required', explode('|', $rule));
+            })->keys()->toArray();
+        }
+        return $required_columns;
     }
 }

@@ -74,8 +74,12 @@
                                                     <div class="form-group">
                                                         <label for="{{ $column['name'] }}__heading">
                                                             @lang('import-operation::import.select_a_column')
+
+                                                            @if(in_array($column['name'], $required_columns))
+                                                                <span class="text-danger">*</span>
+                                                            @endif
                                                         </label>
-                                                        <select class="form-control"
+                                                        <select class="form-control" {{ in_array($column['name'], $required_columns) ? 'required' : '' }}
                                                                 name="{{ $column['name'] }}__heading"
                                                                 id="{{ $column['name'] }}__heading">
                                                             <option value="">
@@ -123,6 +127,9 @@
                                                     </p>
                                                     <h4 class="m-0 font-xl">
                                                         {{ $column['label'] }}
+                                                        @if(in_array($column['name'], $required_columns))
+                                                            <span class="text-danger">*</span>
+                                                        @endif
                                                     </h4>
                                                     <strong class="text-muted">
                                                         @if(in_array($column['type'], array_keys(config('backpack.operations.import.column_aliases'))))
