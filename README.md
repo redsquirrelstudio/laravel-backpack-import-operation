@@ -52,8 +52,9 @@ the same syntax as you would to define your list views.
     3. [Changing the Import log Model](#import-log)
     4. [Customising Translations](#translations)
     5. [Customising Views](#views)
-13. [Credits](#credits)
-14. [License](#license)
+13. [Restricting Access](#restricting-access)
+14. [Credits](#credits)
+15. [License](#license)
 
 ## Installation
 
