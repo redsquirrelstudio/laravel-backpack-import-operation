@@ -706,7 +706,7 @@ Like most operations in Backpack, you can restrict user access using the followi
 
 ## Credits
 
-- [Lewis Raggett][link-me] :: Package Creator
+- [Lewis Raggett][link-me] and [The Team at Sprechen][link-sprechen]  :: Package Creator
 - [Cristian Tabacitu][link-backpack] :: Backpack for Laravel Creator
 - [Spartner][link-laravel-excel] :: Laravel Excel Creator
 
@@ -733,3 +733,5 @@ MIT. Please see the [license file](license.md) for more information.
 [link-backpack]: https://github.com/Laravel-Backpack
 
 [link-me]: https://github.com/redsquirrelstudio
+
+[link-sprechen]: https://sprechen.co.uk
