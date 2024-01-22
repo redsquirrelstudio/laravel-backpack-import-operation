@@ -18,6 +18,8 @@ and allows you as the developer to:
 
 [!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/redsquirrelstudio)
 
+If you're looking for a great team of developers to handle some Backpack/Laravel development for you, drop us a line at [Sprechen][link-sprechen]
+
 
 ![Screenshot of the operation's mapping screen](https://raw.githubusercontent.com/redsquirrelstudio/laravel-backpack-import-operation/dev/assets/screenshot.jpg?raw=true)
 
