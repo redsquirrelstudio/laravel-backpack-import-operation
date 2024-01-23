@@ -10,8 +10,13 @@ use Maatwebsite\Excel\Concerns\OnEachRow;
 use Maatwebsite\Excel\Concerns\WithEvents;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Maatwebsite\Excel\Events\AfterImport;
+use Maatwebsite\Excel\Events\BeforeImport;
 use Maatwebsite\Excel\Row;
 use RedSquirrelStudio\LaravelBackpackImportOperation\Columns\TextColumn;
+use RedSquirrelStudio\LaravelBackpackImportOperation\Events\ImportCompleteEvent;
+use RedSquirrelStudio\LaravelBackpackImportOperation\Events\ImportRowProcessed;
+use RedSquirrelStudio\LaravelBackpackImportOperation\Events\ImportRowSkipped;
+use RedSquirrelStudio\LaravelBackpackImportOperation\Events\ImportStartedEvent;
 use RedSquirrelStudio\LaravelBackpackImportOperation\Interfaces\WithCrudSupport;
 use RedSquirrelStudio\LaravelBackpackImportOperation\Models\ImportLog;
 use Exception;
@@ -35,7 +40,7 @@ class CrudImport implements WithCrudSupport, OnEachRow, WithHeadingRow, WithEven
             throw new Exception(__('import-operation::import.cant_find_log'));
         }
         $this->import_log = $import_log;
-        $this->rules =  $validator ? (new $validator)->rules() : null;
+        $this->rules = $validator ? (new $validator)->rules() : null;
     }
 
     /**
@@ -52,16 +57,17 @@ class CrudImport implements WithCrudSupport, OnEachRow, WithHeadingRow, WithEven
         $row = $this->filterRow($row);
 
         //If validation is set, we need to map the file columns to our model fields
-        if ($this->rules){
+        if ($this->rules) {
             $mapped_rules = [];
-            foreach($this->rules as $key => $rule){
+            foreach ($this->rules as $key => $rule) {
                 $matching_heading = $this->getMatchedHeading($key);
-                if ($matching_heading){
+                if ($matching_heading) {
                     $mapped_rules[$matching_heading] = $rule;
                 }
             }
 
-            if (count($mapped_rules) > 0 && Validator::make($row, $mapped_rules)->fails()){
+            if (count($mapped_rules) > 0 && Validator::make($row, $mapped_rules)->fails()) {
+                ImportRowSkipped::dispatch($this->import_log, $row);
                 return;
             }
         }
@@ -74,7 +80,7 @@ class CrudImport implements WithCrudSupport, OnEachRow, WithHeadingRow, WithEven
             $handler_classes = $this->getColumnHandlerClasses($matched_config);
 
             if ($matched_config && count($handler_classes) === count($matched_config)) {
-                foreach($handler_classes as $index => $handler_class){
+                foreach ($handler_classes as $index => $handler_class) {
                     //Instantiate handler class, process data from column
                     $handler = new $handler_class($value, $matched_config[$index], $this->import_log->model);
                     $data = $handler->output();
@@ -87,6 +93,7 @@ class CrudImport implements WithCrudSupport, OnEachRow, WithHeadingRow, WithEven
         }
         //Save the entry
         $entry->save();
+        ImportRowProcessed::dispatch($this->import_log, $entry, $row);
     }
 
     /**
@@ -152,10 +159,10 @@ class CrudImport implements WithCrudSupport, OnEachRow, WithHeadingRow, WithEven
     protected function getMatchedHeading(string $config_name): ?string
     {
         $config = $this->import_log->config;
-        $matching = collect($config)->filter(function($item) use($config_name){
-            return isset($item['name']) && $item['name'] === $config_name;
+        $matching = collect($config)->filter(function ($items) use ($config_name) {
+            return !is_null(collect($items)->where('name', $config_name)->first());
         })->keys()->first();
-        if ($matching){
+        if ($matching) {
             return $matching;
         }
         return null;
@@ -169,7 +176,7 @@ class CrudImport implements WithCrudSupport, OnEachRow, WithHeadingRow, WithEven
     {
         $columns_types = [];
         if ($matched_config) {
-            foreach($matched_config as $matched_config_column){
+            foreach ($matched_config as $matched_config_column) {
                 if (!isset($matched_config_column['type'])) {
                     $column_types[] = TextColumn::class;
                 }
@@ -200,15 +207,22 @@ class CrudImport implements WithCrudSupport, OnEachRow, WithHeadingRow, WithEven
     public function registerEvents(): array
     {
         return [
+            BeforeImport::class => function (BeforeImport $event) {
+                $importer = $event->getConcernable();
+                $log = $importer->getImportLog();
+                ImportStartedEvent::dispatch($log);
+            },
             AfterImport::class => function (AfterImport $event) {
                 $importer = $event->getConcernable();
                 $log = $importer->getImportLog();
                 $log->completed_at = Carbon::now();
                 $log->save();
 
-                if ($log->delete_file_after_import){
+                if ($log->delete_file_after_import) {
                     Storage::disk($log->disk)->delete($log->file_path);
                 }
+
+                ImportCompleteEvent::dispatch($log);
             },
         ];
     }

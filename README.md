@@ -54,9 +54,10 @@ the same syntax as you would to define your list views.
     3. [Changing the Import log Model](#import-log)
     4. [Customising Translations](#translations)
     5. [Customising Views](#views)
-13. [Restricting Access](#restricting-access)
-14. [Credits](#credits)
-15. [License](#license)
+13. [Events](#events)
+14. [Restricting Access](#restricting-access)
+15. [Credits](#credits)
+16. [License](#license)
 
 ## Installation
 
@@ -693,6 +694,72 @@ php artisan vendor:publish --tag=laravel-backpack-import-operation-views
 
 this will publish the operation blade files to ```resources/views/vendor/backpack/import-operation```
 The files stored in this directory take priority over the package's default views.
+
+## Events
+This package dispatches events at different points during the import process.
+This way you can track when import rows fail, succeeds, and when an import starts and ends.
+
+### Import Started Event
+This event is fired when an import begins processing.
+##### Class:
+```php
+RedSquirrelStudio\LaravelBackpackImportOperation\Events\ImportStartedEvent::class
+```
+##### Payload:
+```php
+[
+    //The Import being processed 
+   'import_log' => RedSquirrelStudio\LaravelBackpackImportOperation\Models\ImportLog::class 
+]
+```
+
+### Import Completed Event
+This event is fired when an import has been completed.
+##### Event Class:
+```php
+RedSquirrelStudio\LaravelBackpackImportOperation\Events\ImportCompleteEvent::class
+```
+##### Payload:
+```php
+[
+    //The Completed Import
+   'import_log' => RedSquirrelStudio\LaravelBackpackImportOperation\Models\ImportLog::class 
+]
+```
+
+### Import Row Processed Event
+Each time a row is successfully processed, this event is fired.
+##### Event Class:
+```php
+RedSquirrelStudio\LaravelBackpackImportOperation\Events\ImportRowProcessedEvent::class
+```
+##### Payload:
+```php
+[
+    //The Import being processed 
+   'import_log' => RedSquirrelStudio\LaravelBackpackImportOperation\Models\ImportLog::class,
+   //The data from the spreadsheet row
+   'row_data' => array(),
+   //The created/update model from the row
+   'entry' => \Illuminate\Database\Eloquent\Model::class 
+]
+```
+
+### Import Row Skipped Event
+When a row fails validation and is skipped, this event is fired.
+##### Event Class:
+```php
+RedSquirrelStudio\LaravelBackpackImportOperation\Events\ImportRowSkippedEvent::class
+```
+##### Payload:
+```php
+[
+    //The Import being processed 
+   'import_log' => RedSquirrelStudio\LaravelBackpackImportOperation\Models\ImportLog::class,
+   //The data from the spreadsheet row
+   'row_data' => array(),
+]
+```
 
 ## Restricting Access
 Like most operations in Backpack, you can restrict user access using the following line of code in your CRUD Controller's setup function:
