@@ -14,8 +14,8 @@ use Maatwebsite\Excel\Events\BeforeImport;
 use Maatwebsite\Excel\Row;
 use RedSquirrelStudio\LaravelBackpackImportOperation\Columns\TextColumn;
 use RedSquirrelStudio\LaravelBackpackImportOperation\Events\ImportCompleteEvent;
-use RedSquirrelStudio\LaravelBackpackImportOperation\Events\ImportRowProcessed;
-use RedSquirrelStudio\LaravelBackpackImportOperation\Events\ImportRowSkipped;
+use RedSquirrelStudio\LaravelBackpackImportOperation\Events\ImportRowProcessedEvent;
+use RedSquirrelStudio\LaravelBackpackImportOperation\Events\ImportRowSkippedEvent;
 use RedSquirrelStudio\LaravelBackpackImportOperation\Events\ImportStartedEvent;
 use RedSquirrelStudio\LaravelBackpackImportOperation\Interfaces\WithCrudSupport;
 use RedSquirrelStudio\LaravelBackpackImportOperation\Models\ImportLog;
@@ -67,7 +67,7 @@ class CrudImport implements WithCrudSupport, OnEachRow, WithHeadingRow, WithEven
             }
 
             if (count($mapped_rules) > 0 && Validator::make($row, $mapped_rules)->fails()) {
-                ImportRowSkipped::dispatch($this->import_log, $row);
+                ImportRowSkippedEvent::dispatch($this->import_log, $row);
                 return;
             }
         }
@@ -93,7 +93,7 @@ class CrudImport implements WithCrudSupport, OnEachRow, WithHeadingRow, WithEven
         }
         //Save the entry
         $entry->save();
-        ImportRowProcessed::dispatch($this->import_log, $entry, $row);
+        ImportRowProcessedEvent::dispatch($this->import_log, $entry, $row);
     }
 
     /**
