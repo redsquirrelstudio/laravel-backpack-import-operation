@@ -41,23 +41,24 @@ the same syntax as you would to define your list views.
     4. [Date](#date)
     5. [Array](#array)
 4. [Primary Keys](#primary-keys)
-5. [Validation](#validation)
-6. [Adding an Example File](#adding-an-example-file)
-7. [Adding Your Own Columns](#adding-your-own-columns)
-8. [Custom Import Classes](#custom-import-classes)
-9. [Disabling User Mapping](#disabling-user-mapping)
-10. [Delete Spreadsheet on Completion](#delete-spreadsheet-on-completion)
-11. [Queued Imports](#queued-imports)
-12. [Configuration](#configuration)
+5. [Imports Without Primary Keys](#imports-without-primary-keys)
+6. [Validation](#validation)
+7. [Adding an Example File](#adding-an-example-file)
+8. [Adding Your Own Columns](#adding-your-own-columns)
+9. [Custom Import Classes](#custom-import-classes)
+10. [Disabling User Mapping](#disabling-user-mapping)
+11. [Delete Spreadsheet on Completion](#delete-spreadsheet-on-completion)
+12. [Queued Imports](#queued-imports)
+13. [Configuration](#configuration)
     1. [File Uploads](#file-uploads)
     2. [Queues](#queues)
     3. [Changing the Import log Model](#import-log)
     4. [Customising Translations](#translations)
     5. [Customising Views](#views)
-13. [Events](#events)
-14. [Restricting Access](#restricting-access)
-15. [Credits](#credits)
-16. [License](#license)
+14. [Events](#events)
+15. [Restricting Access](#restricting-access)
+16. [Credits](#credits)
+17. [License](#license)
 
 ## Installation
 
@@ -381,6 +382,23 @@ CRUD::addColumn([
    'type' => 'number',
    'primary_key' => true,
 ]);
+```
+
+## Imports Without Primary Keys
+
+You can disable the requirement for a primary key, however, it will mean that your import
+can only create new models and won't be able to update existing data. This can be useful in cases
+where you don't have a defined primary key and are relying on the model's auto-incrementing ID. This setting
+can also help where you want to be able to specify a unique column that the user shouldn't be able to create multiples of or change existing data for.
+
+TLDR: Imports with this setting enabled cannot update existing data, only import new data.
+
+Add the following line to your ```setupImportOperation``` function:
+```php
+    protected function setupImportOperation()
+    {
+        $this->withoutPrimaryKey();
+        //Some column config...
 ```
 
 ## Validation

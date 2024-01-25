@@ -134,6 +134,15 @@ trait ImportOperation
     }
 
     /**
+     * Remove the need for a primary key, only create models
+     * @return void
+     */
+    public function withoutPrimaryKey(): void
+    {
+        CRUD::setOperationSetting('disablePrimaryKey', true);
+    }
+
+    /**
      * Set a custom import class, this will skip the mapping phase on the front end
      * @param string $import_class
      * @return void
@@ -193,13 +202,17 @@ trait ImportOperation
         }
 
         $log_model = $this->getImportLogModel();
+        $model_primary_key = null;
+        if (!($this->crud->getOperationSetting('disablePrimaryKey', 'import') ?? false)) {
+            $model_primary_key = $this->getImportPrimaryKey();
+        }
 
         $log = $log_model::create([
             'user_id' => backpack_user()->id,
             'file_path' => $file_path,
             'disk' => $disk,
             'model' => get_class($this->crud->model),
-            'model_primary_key' => $this->getImportPrimaryKey(),
+            'model_primary_key' => $model_primary_key,
         ]);
 
         //If a custom import is set, skip directly to handle the import
@@ -289,14 +302,21 @@ trait ImportOperation
             ]);
         }
 
-        if (is_null(collect($config)->filter(function ($items) use ($log) {
-            return collect($items)->where('name', $log->model_primary_key)->count() > 0;
-        })->first())) {
+        if (
+            //If primary key is not disabled
+            !($this->crud->getOperationSetting('disablePrimaryKey', 'import') ?? false) &&
+            //And at least one sheet column has not been mapped to the primary key column
+            is_null(collect($config)->filter(function ($items) use ($log) {
+                return collect($items)->where('name', $log->model_primary_key)->count() > 0;
+            })->first())
+        ) {
+            //Redirect back to mapper with error
             return redirect($this->crud->route . '/import/' . $id . '/map')->withErrors([
                 'import' => __('import-operation::import.please_map_the_primary_key'),
             ]);
         }
 
+        //Check that all columns with the required rule in the set request are present in mapping
         $required_errors = [];
         $required_columns = $this->getRequiredImportColumns();
         foreach ($required_columns as $required_column) {
@@ -311,10 +331,9 @@ trait ImportOperation
             }
         }
 
-        if (count($required_errors) > 0){
+        if (count($required_errors) > 0) {
             return redirect($this->crud->route . '/import/' . $id . '/map')->withErrors($required_errors);
         }
-
 
         $log->config = $config;
         $log->save();
@@ -447,7 +466,7 @@ trait ImportOperation
     {
         $rules = [
             'file_path' => 'required',
-            'model_primary_key' => 'required',
+            'model_primary_key' => ($this->crud->getOperationSetting('disablePrimaryKey', 'import') ?? false) ? 'nullable' : 'required',
             'model' => 'required',
         ];
         if ($include_config) {
