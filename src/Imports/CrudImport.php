@@ -107,15 +107,21 @@ class CrudImport implements WithCrudSupport, OnEachRow, WithHeadingRow, WithEven
         $model = $this->import_log->model;
         $primary_key = $this->import_log->model_primary_key;
 
-        $primary_column_header = $this->getPrimaryKeyColumnHeader();
-        $primary_key_value = $row[$primary_column_header] ?? null;
-        if ($primary_key_value) {
-            $entry = $model::where($primary_key, $primary_key_value)->first();
+        if (!is_null($primary_key)){
+            $primary_column_header = $this->getPrimaryKeyColumnHeader();
+            $primary_key_value = $row[$primary_column_header] ?? null;
+            if ($primary_key_value) {
+                $entry = $model::where($primary_key, $primary_key_value)->first();
+            }
+
+            if (!$entry) {
+                $entry = new $model([$primary_key => $primary_key_value]);
+            }
+            return $entry;
         }
-        if (!$entry) {
-            $entry = new $model([$primary_key => $primary_key_value]);
-        }
-        return $entry;
+
+
+        return new $model;
     }
 
     /**
