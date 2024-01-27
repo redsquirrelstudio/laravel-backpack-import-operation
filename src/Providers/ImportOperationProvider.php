@@ -79,7 +79,7 @@ class ImportOperationProvider extends ServiceProvider
      */
     public function register(): void
     {
-        $this->commands($this->commands);
+        if (class_exists('\Backpack\Generators\Services\BackpackCommand')) { $this->commands($this->commands); }
     }
 
 }
