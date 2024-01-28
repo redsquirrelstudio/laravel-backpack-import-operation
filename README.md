@@ -1,8 +1,8 @@
 # Import Operation for Backpack for Laravel
 
-[//]: # ([![Latest Version on Packagist][ico-version]][link-packagist])
+[![Latest Version on Packagist][ico-version]][link-packagist]
 
-[//]: # ([![Total Downloads][ico-downloads]][link-downloads])
+[![Total Downloads][ico-downloads]][link-downloads]
 
 Adds a configurable interface that allows your admin users to:
 
@@ -20,6 +20,7 @@ and allows you as the developer to:
 
 If you're looking for a great team of developers to handle some Backpack/Laravel development for you, drop us a line at [Sprechen][link-sprechen]
 
+**Also need full exports for your CRUD? Check out [redsquirrelstudio/laravel-backpack-export-operation](https://github.com/redsquirrelstudio/laravel-backpack-export-operation)**
 
 ![Screenshot of the operation's mapping screen](https://raw.githubusercontent.com/redsquirrelstudio/laravel-backpack-import-operation/dev/assets/screenshot.jpg?raw=true)
 
@@ -809,7 +810,7 @@ MIT. Please see the [license file](license.md) for more information.
 
 [ico-downloads]: https://img.shields.io/packagist/dt/redsquirrelstudio/laravel-backpack-import-operation.svg?style=flat-square
 
-[link-downloads]: https://packagist.org/packages/backpack/revise-operation
+[link-downloads]: https://packagist.org/packages/redsquirrelstudio/laravel-backpack-import-operation
 
 [link-laravel-excel]: https://laravel-excel.com
 
