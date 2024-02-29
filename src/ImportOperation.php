@@ -288,11 +288,7 @@ trait ImportOperation
                     $config[$chosen_heading] = [];
                 }
 
-                $config[$chosen_heading][] = collect($column)->filter(
-                    fn($value, $key) => in_array($key, [
-                            'name', 'label', 'type', 'primary_key', 'options', 'separator', 'multiple',
-                        ]
-                    ))->toArray();
+                $config[$chosen_heading][] = collect($column)->toArray();
             }
         }
 
